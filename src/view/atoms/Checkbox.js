@@ -5,13 +5,7 @@ import {
   FormControl,
 } from "@mui/material";
 
-const Checkbox = ({
-  checked,
-  onChange,
-  disabled = false,
-  label,
-  ...props
-}) => {
+const Checkbox = ({ checked, onChange, disabled = false, label, ...props }) => {
   if (label) {
     return (
       <FormControl>

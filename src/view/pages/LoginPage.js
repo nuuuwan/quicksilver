@@ -40,7 +40,15 @@ function LoginPage() {
 
         <LoginForm onSubmit={handleSubmit} loading={loading} />
 
-        <Box sx={{ mt: 2, display: "flex", gap: 2, flexWrap: "wrap", justifyContent: "center" }}>
+        <Box
+          sx={{
+            mt: 2,
+            display: "flex",
+            gap: 2,
+            flexWrap: "wrap",
+            justifyContent: "center",
+          }}
+        >
           <Link component={RouterLink} to="/forgot-password" variant="body2">
             Forgot password?
           </Link>

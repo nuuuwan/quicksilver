@@ -35,12 +35,12 @@ const PasswordResetForm = ({ onSubmit, loading = false }) => {
     try {
       await onSubmit({ email });
       setSuccessMessage(
-        "Password reset instructions have been sent to your email address."
+        "Password reset instructions have been sent to your email address.",
       );
       setEmail("");
     } catch (error) {
       setFormError(
-        error.message || "Failed to send reset email. Please try again."
+        error.message || "Failed to send reset email. Please try again.",
       );
     }
   };
@@ -49,7 +49,10 @@ const PasswordResetForm = ({ onSubmit, loading = false }) => {
     <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1, width: "100%" }}>
       {formError && (
         <Box sx={{ mb: 2 }}>
-          <ErrorMessage message={formError} onDismiss={() => setFormError("")} />
+          <ErrorMessage
+            message={formError}
+            onDismiss={() => setFormError("")}
+          />
         </Box>
       )}
 

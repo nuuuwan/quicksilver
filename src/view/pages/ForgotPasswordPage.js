@@ -35,8 +35,13 @@ function ForgotPasswordPage() {
         <Typography component="h2" variant="h5" sx={{ mb: 1 }}>
           Reset your password
         </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 3, textAlign: "center" }}>
-          Enter your email address and we'll send you instructions to reset your password.
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          sx={{ mb: 3, textAlign: "center" }}
+        >
+          Enter your email address and we'll send you instructions to reset your
+          password.
         </Typography>
 
         <PasswordResetForm onSubmit={handleSubmit} loading={loading} />

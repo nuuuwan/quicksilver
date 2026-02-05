@@ -50,7 +50,10 @@ const LoginForm = ({ onSubmit, loading = false }) => {
     <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1, width: "100%" }}>
       {formError && (
         <Box sx={{ mb: 2 }}>
-          <ErrorMessage message={formError} onDismiss={() => setFormError("")} />
+          <ErrorMessage
+            message={formError}
+            onDismiss={() => setFormError("")}
+          />
         </Box>
       )}
 
