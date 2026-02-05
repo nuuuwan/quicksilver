@@ -1,6 +1,46 @@
 import React, { useState } from "react";
-import { Box, Stack, TextField, Button, CircularProgress } from "@mui/material";
+import { Box, Stack, TextField, Button, CircularProgress, MenuItem, Typography, Divider } from "@mui/material";
 import ErrorMessage from "../atoms/ErrorMessage";
+
+// Email service provider configurations
+const EMAIL_PROVIDERS = {
+  gmail: {
+    name: "Gmail",
+    imapHost: "imap.gmail.com",
+    imapPort: 993,
+    imapSecure: true,
+    smtpHost: "smtp.gmail.com",
+    smtpPort: 587,
+    smtpSecure: true,
+  },
+  outlook: {
+    name: "Outlook",
+    imapHost: "outlook.office365.com",
+    imapPort: 993,
+    imapSecure: true,
+    smtpHost: "smtp.office365.com",
+    smtpPort: 587,
+    smtpSecure: true,
+  },
+  yahoo: {
+    name: "Yahoo Mail",
+    imapHost: "imap.mail.yahoo.com",
+    imapPort: 993,
+    imapSecure: true,
+    smtpHost: "smtp.mail.yahoo.com",
+    smtpPort: 587,
+    smtpSecure: true,
+  },
+  custom: {
+    name: "Custom",
+    imapHost: "",
+    imapPort: 993,
+    imapSecure: true,
+    smtpHost: "",
+    smtpPort: 587,
+    smtpSecure: true,
+  },
+};
 
 /**
  * ProfileForm - Form for editing user profile
@@ -14,6 +54,16 @@ function ProfileForm({ user, onSubmit }) {
     currentPassword: "",
     newPassword: "",
     confirmPassword: "",
+    // Email service configuration
+    emailServiceProvider: user.emailServiceProvider || "gmail",
+    emailAddress: user.emailAddress || "",
+    emailPassword: user.emailPassword || "",
+    imapHost: user.imapHost || EMAIL_PROVIDERS.gmail.imapHost,
+    imapPort: user.imapPort || EMAIL_PROVIDERS.gmail.imapPort,
+    imapSecure: user.imapSecure ?? EMAIL_PROVIDERS.gmail.imapSecure,
+    smtpHost: user.smtpHost || EMAIL_PROVIDERS.gmail.smtpHost,
+    smtpPort: user.smtpPort || EMAIL_PROVIDERS.gmail.smtpPort,
+    smtpSecure: user.smtpSecure ?? EMAIL_PROVIDERS.gmail.smtpSecure,
   });
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -21,7 +71,23 @@ function ProfileForm({ user, onSubmit }) {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    let updates = { [name]: value };
+
+    // Auto-populate server settings when provider changes
+    if (name === "emailServiceProvider" && EMAIL_PROVIDERS[value]) {
+      const provider = EMAIL_PROVIDERS[value];
+      updates = {
+        ...updates,
+        imapHost: provider.imapHost,
+        imapPort: provider.imapPort,
+        imapSecure: provider.imapSecure,
+        smtpHost: provider.smtpHost,
+        smtpPort: provider.smtpPort,
+        smtpSecure: provider.smtpSecure,
+      };
+    }
+
+    setFormData((prev) => ({ ...prev, ...updates }));
     setError("");
     setSuccess("");
   };
@@ -71,6 +137,16 @@ function ProfileForm({ user, onSubmit }) {
       const updateData = {
         name: formData.name,
         email: formData.email,
+        // Email service configuration
+        emailServiceProvider: formData.emailServiceProvider,
+        emailAddress: formData.emailAddress,
+        emailPassword: formData.emailPassword,
+        imapHost: formData.imapHost,
+        imapPort: parseInt(formData.imapPort),
+        imapSecure: formData.imapSecure,
+        smtpHost: formData.smtpHost,
+        smtpPort: parseInt(formData.smtpPort),
+        smtpSecure: formData.smtpSecure,
       };
 
       // Only include password fields if changing password
@@ -173,6 +249,104 @@ function ProfileForm({ user, onSubmit }) {
           fullWidth
           variant="outlined"
         />
+
+        <Divider sx={{ my: 2 }} />
+        <Typography variant="h6" gutterBottom>
+          Email Service Configuration
+        </Typography>
+
+        <TextField
+          select
+          label="Email Service Provider"
+          name="emailServiceProvider"
+          value={formData.emailServiceProvider}
+          onChange={handleChange}
+          disabled={loading}
+          fullWidth
+          variant="outlined"
+        >
+          {Object.entries(EMAIL_PROVIDERS).map(([key, provider]) => (
+            <MenuItem key={key} value={key}>
+              {provider.name}
+            </MenuItem>
+          ))}
+        </TextField>
+
+        <TextField
+          label="Email Address"
+          type="email"
+          name="emailAddress"
+          value={formData.emailAddress}
+          onChange={handleChange}
+          helperText="Your actual email address (e.g., yourname@gmail.com)"
+          disabled={loading}
+          fullWidth
+          variant="outlined"
+        />
+
+        <TextField
+          label="Email Password / App Password"
+          type="password"
+          name="emailPassword"
+          value={formData.emailPassword}
+          onChange={handleChange}
+          helperText="For Gmail/Outlook, use an app-specific password"
+          disabled={loading}
+          fullWidth
+          variant="outlined"
+        />
+
+        {formData.emailServiceProvider === "custom" && (
+          <>
+            <Typography variant="subtitle2" sx={{ mt: 2, mb: 1 }}>
+              IMAP Settings (Incoming Mail)
+            </Typography>
+            <TextField
+              label="IMAP Host"
+              type="text"
+              name="imapHost"
+              value={formData.imapHost}
+              onChange={handleChange}
+              disabled={loading}
+              fullWidth
+              variant="outlined"
+            />
+            <TextField
+              label="IMAP Port"
+              type="number"
+              name="imapPort"
+              value={formData.imapPort}
+              onChange={handleChange}
+              disabled={loading}
+              fullWidth
+              variant="outlined"
+            />
+
+            <Typography variant="subtitle2" sx={{ mt: 2, mb: 1 }}>
+              SMTP Settings (Outgoing Mail)
+            </Typography>
+            <TextField
+              label="SMTP Host"
+              type="text"
+              name="smtpHost"
+              value={formData.smtpHost}
+              onChange={handleChange}
+              disabled={loading}
+              fullWidth
+              variant="outlined"
+            />
+            <TextField
+              label="SMTP Port"
+              type="number"
+              name="smtpPort"
+              value={formData.smtpPort}
+              onChange={handleChange}
+              disabled={loading}
+              fullWidth
+              variant="outlined"
+            />
+          </>
+        )}
 
         <Button
           type="submit"

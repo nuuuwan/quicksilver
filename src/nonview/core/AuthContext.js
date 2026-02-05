@@ -61,6 +61,16 @@ export const AuthProvider = ({ children }) => {
             id: Date.now().toString(),
             email: userData.email,
             name: userData.name,
+            // Email service configuration
+            emailServiceProvider: userData.emailServiceProvider,
+            emailAddress: userData.emailAddress,
+            emailPassword: userData.emailPassword,
+            imapHost: userData.imapHost,
+            imapPort: userData.imapPort,
+            imapSecure: userData.imapSecure,
+            smtpHost: userData.smtpHost,
+            smtpPort: userData.smtpPort,
+            smtpSecure: userData.smtpSecure,
           };
           setCurrentUser(user);
           setIsAuthenticated(true);

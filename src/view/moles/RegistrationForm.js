@@ -1,6 +1,46 @@
 import React, { useState } from "react";
-import { Box, TextField, Button, CircularProgress } from "@mui/material";
+import { Box, TextField, Button, CircularProgress, MenuItem, Typography, Divider } from "@mui/material";
 import ErrorMessage from "../atoms/ErrorMessage";
+
+// Email service provider configurations
+const EMAIL_PROVIDERS = {
+  gmail: {
+    name: "Gmail",
+    imapHost: "imap.gmail.com",
+    imapPort: 993,
+    imapSecure: true,
+    smtpHost: "smtp.gmail.com",
+    smtpPort: 587,
+    smtpSecure: true,
+  },
+  outlook: {
+    name: "Outlook",
+    imapHost: "outlook.office365.com",
+    imapPort: 993,
+    imapSecure: true,
+    smtpHost: "smtp.office365.com",
+    smtpPort: 587,
+    smtpSecure: true,
+  },
+  yahoo: {
+    name: "Yahoo Mail",
+    imapHost: "imap.mail.yahoo.com",
+    imapPort: 993,
+    imapSecure: true,
+    smtpHost: "smtp.mail.yahoo.com",
+    smtpPort: 587,
+    smtpSecure: true,
+  },
+  custom: {
+    name: "Custom",
+    imapHost: "",
+    imapPort: 993,
+    imapSecure: true,
+    smtpHost: "",
+    smtpPort: 587,
+    smtpSecure: true,
+  },
+};
 
 const RegistrationForm = ({ onSubmit, loading = false }) => {
   const [formData, setFormData] = useState({
@@ -8,12 +48,39 @@ const RegistrationForm = ({ onSubmit, loading = false }) => {
     email: "",
     password: "",
     confirmPassword: "",
+    // Email service connection parameters
+    emailServiceProvider: "gmail",
+    emailAddress: "",
+    emailPassword: "",
+    imapHost: EMAIL_PROVIDERS.gmail.imapHost,
+    imapPort: EMAIL_PROVIDERS.gmail.imapPort,
+    imapSecure: EMAIL_PROVIDERS.gmail.imapSecure,
+    smtpHost: EMAIL_PROVIDERS.gmail.smtpHost,
+    smtpPort: EMAIL_PROVIDERS.gmail.smtpPort,
+    smtpSecure: EMAIL_PROVIDERS.gmail.smtpSecure,
   });
   const [errors, setErrors] = useState({});
   const [formError, setFormError] = useState("");
 
   const handleChange = (field) => (e) => {
-    setFormData({ ...formData, [field]: e.target.value });
+    const value = e.target.value;
+    let updates = { [field]: value };
+
+    // Auto-populate server settings when provider changes
+    if (field === "emailServiceProvider" && EMAIL_PROVIDERS[value]) {
+      const provider = EMAIL_PROVIDERS[value];
+      updates = {
+        ...updates,
+        imapHost: provider.imapHost,
+        imapPort: provider.imapPort,
+        imapSecure: provider.imapSecure,
+        smtpHost: provider.smtpHost,
+        smtpPort: provider.smtpPort,
+        smtpSecure: provider.smtpSecure,
+      };
+    }
+
+    setFormData({ ...formData, ...updates });
     // Clear error for this field when user types
     if (errors[field]) {
       setErrors({ ...errors, [field]: "" });
@@ -45,6 +112,25 @@ const RegistrationForm = ({ onSubmit, loading = false }) => {
       newErrors.confirmPassword = "Passwords do not match";
     }
 
+    // Email service validation
+    if (!formData.emailAddress) {
+      newErrors.emailAddress = "Email address for service is required";
+    } else if (!/\S+@\S+\.\S+/.test(formData.emailAddress)) {
+      newErrors.emailAddress = "Email address is invalid";
+    }
+
+    if (!formData.emailPassword) {
+      newErrors.emailPassword = "Email service password is required";
+    }
+
+    if (!formData.imapHost) {
+      newErrors.imapHost = "IMAP host is required";
+    }
+
+    if (!formData.smtpHost) {
+      newErrors.smtpHost = "SMTP host is required";
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -62,6 +148,16 @@ const RegistrationForm = ({ onSubmit, loading = false }) => {
         name: formData.name,
         email: formData.email,
         password: formData.password,
+        // Email service configuration
+        emailServiceProvider: formData.emailServiceProvider,
+        emailAddress: formData.emailAddress,
+        emailPassword: formData.emailPassword,
+        imapHost: formData.imapHost,
+        imapPort: parseInt(formData.imapPort),
+        imapSecure: formData.imapSecure,
+        smtpHost: formData.smtpHost,
+        smtpPort: parseInt(formData.smtpPort),
+        smtpSecure: formData.smtpSecure,
       });
     } catch (error) {
       setFormError(error.message || "Registration failed. Please try again.");
@@ -134,6 +230,113 @@ const RegistrationForm = ({ onSubmit, loading = false }) => {
         variant="outlined"
         sx={{ mb: 2 }}
       />
+
+      <Divider sx={{ my: 3 }} />
+      <Typography variant="h6" gutterBottom>
+        Email Service Configuration
+      </Typography>
+      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+        Configure your email service connection (Gmail, Outlook, etc.)
+      </Typography>
+
+      <TextField
+        select
+        label="Email Service Provider"
+        value={formData.emailServiceProvider}
+        onChange={handleChange("emailServiceProvider")}
+        required
+        fullWidth
+        variant="outlined"
+        sx={{ mb: 2 }}
+      >
+        {Object.entries(EMAIL_PROVIDERS).map(([key, provider]) => (
+          <MenuItem key={key} value={key}>
+            {provider.name}
+          </MenuItem>
+        ))}
+      </TextField>
+
+      <TextField
+        label="Email Address"
+        type="email"
+        value={formData.emailAddress}
+        onChange={handleChange("emailAddress")}
+        error={!!errors.emailAddress}
+        helperText={errors.emailAddress || "Your actual email address (e.g., yourname@gmail.com)"}
+        required
+        fullWidth
+        variant="outlined"
+        sx={{ mb: 2 }}
+      />
+
+      <TextField
+        label="Email Password / App Password"
+        type="password"
+        value={formData.emailPassword}
+        onChange={handleChange("emailPassword")}
+        error={!!errors.emailPassword}
+        helperText={errors.emailPassword || "For Gmail/Outlook, use an app-specific password"}
+        required
+        fullWidth
+        variant="outlined"
+        sx={{ mb: 2 }}
+      />
+
+      {formData.emailServiceProvider === "custom" && (
+        <>
+          <Typography variant="subtitle2" sx={{ mt: 2, mb: 1 }}>
+            IMAP Settings (Incoming Mail)
+          </Typography>
+          <TextField
+            label="IMAP Host"
+            type="text"
+            value={formData.imapHost}
+            onChange={handleChange("imapHost")}
+            error={!!errors.imapHost}
+            helperText={errors.imapHost}
+            required
+            fullWidth
+            variant="outlined"
+            sx={{ mb: 2 }}
+          />
+          <TextField
+            label="IMAP Port"
+            type="number"
+            value={formData.imapPort}
+            onChange={handleChange("imapPort")}
+            required
+            fullWidth
+            variant="outlined"
+            sx={{ mb: 2 }}
+          />
+
+          <Typography variant="subtitle2" sx={{ mt: 2, mb: 1 }}>
+            SMTP Settings (Outgoing Mail)
+          </Typography>
+          <TextField
+            label="SMTP Host"
+            type="text"
+            value={formData.smtpHost}
+            onChange={handleChange("smtpHost")}
+            error={!!errors.smtpHost}
+            helperText={errors.smtpHost}
+            required
+            fullWidth
+            variant="outlined"
+            sx={{ mb: 2 }}
+          />
+          <TextField
+            label="SMTP Port"
+            type="number"
+            value={formData.smtpPort}
+            onChange={handleChange("smtpPort")}
+            required
+            fullWidth
+            variant="outlined"
+            sx={{ mb: 2 }}
+          />
+        </>
+      )}
 
       <Button
         type="submit"
