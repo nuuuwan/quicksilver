@@ -4,7 +4,7 @@
 
 Quicksilver is designed as a unified email client that provides a consistent, modern interface across multiple email providers. Rather than being tied to a single service, Quicksilver can connect to any email service that supports IMAP/SMTP, including Gmail, Outlook, Yahoo, and custom mail servers.
 
-**This document focuses on Milestone 1**, which establishes the foundational architecture for email provider integration. Milestone 1 delivers a working email client with direct IMAP/SMTP connections, allowing users to connect their email accounts and view/send messages.
+**This document focuses on Milestone 1**, which establishes the foundational architecture for email provider integration. Milestone 1 delivers a working email client with direct IMAP/SMTP connections, allowing users to connect their email accounts and view/send messages. **This implementation is optimized for Vercel deployment**, using browser localStorage and serverless functions to eliminate database dependencies.
 
 ### Milestone 1 Goals
 
@@ -14,6 +14,7 @@ Quicksilver is designed as a unified email client that provides a consistent, mo
 4. **Basic Email Operations**: Read emails, send emails, basic folder management
 5. **Provider Auto-Configuration**: Pre-populate settings for Gmail, Outlook, Yahoo
 6. **Security Foundation**: Encrypt credentials at rest, use TLS for all connections
+7. **Vercel Deployment**: Deploy as serverless application with no database dependencies
 
 ### Design Principles
 
@@ -22,6 +23,7 @@ Quicksilver is designed as a unified email client that provides a consistent, mo
 3. **Security by Default**: Encrypt credentials at rest and use TLS for all communications
 4. **User-Friendly Configuration**: Auto-populate settings for popular providers
 5. **Standard Protocols**: Leverage IMAP/SMTP for maximum compatibility
+6. **Vercel-Optimized**: Serverless architecture with browser-based storage, no database
 
 ### Milestone 1 Scope
 
@@ -30,11 +32,13 @@ This document covers the foundational implementation:
 - **In Scope for Milestone 1:**
   - Direct IMAP/SMTP authentication with app-specific passwords
   - User registration with email service configuration
-  - Database schema for user profiles and email settings
+  - Browser localStorage for user profiles (no database required)
+  - Vercel serverless functions for stateless API endpoints
   - Basic IMAP operations (list folders, fetch emails, mark read/unread)
   - Basic SMTP operations (send email, reply, forward)
   - Pre-configured settings for Gmail, Outlook, Yahoo
   - Security foundations (credential encryption, TLS)
+  - One-click Vercel deployment
 
 ### Why Multiple Providers?
 
@@ -47,22 +51,23 @@ Supporting multiple email providers allows Quicksilver to:
 
 ## Architecture Overview
 
-Quicksilver's email server interface follows a modular architecture with three main layers:
+Quicksilver's Milestone 1 architecture is optimized for Vercel deployment with three main layers:
 
-1. **Frontend Layer**: React application that provides the user interface
-2. **Backend Layer**: Node.js server that handles authentication, email operations, and protocol translation
+1. **Frontend Layer**: React application deployed to Vercel's edge network
+2. **Backend Layer**: Vercel Serverless Functions that handle IMAP/SMTP operations
 3. **Email Provider Layer**: External email services (Gmail, Outlook, Yahoo, etc.)
 
-The backend server acts as a mediator between the frontend and email providers, handling IMAP/SMTP operations, authentication, and data transformation.
+All user data is stored in browser localStorage - no database server required. The serverless functions are completely stateless, receiving user credentials with each request.
 
 ### What We Build
 
 **Quicksilver Frontend** (Custom Implementation)
 
 - React-based single-page application
+- Deployed to Vercel's global edge network
 - UI components for email viewing, composition, and management
 - Authentication flows and account setup wizards
-- State management for emails, threads, and user settings
+- State management with localStorage persistence
 - Responsive design for desktop and mobile
 
 **Quicksilver Backend** (Custom Implementation)
@@ -580,26 +585,29 @@ Users can update their email service configuration after registration via the Pr
 - Test connection before saving changes
 - Change Quicksilver account password
 
-### Milestone 1: Direct Credentials Approach
+### Milestone 1: Vercel Serverless Architecture
 
-Milestone 1 implements **direct IMAP/SMTP** connections with user credentials (app passwords).
+Milestone 1 implements a **Vercel-native serverless architecture** with browser-based storage.
 
-**Why This Approach for Milestone 1:**
+**Why Vercel for Milestone 1:**
 
 ✅ **Advantages:**
 
-- Simpler implementation - get working system faster
-- No OAuth app registration required with Google/Microsoft
-- Works immediately for development and testing
-- User has full control over credentials
-- Supports any IMAP/SMTP provider (maximum compatibility)
-- Easier debugging during development
+- Zero database setup - use localStorage instead
+- Serverless functions automatically scale
+- One-click deployment from GitHub
+- Automatic HTTPS and global CDN
+- No infrastructure management required
+- Free tier perfect for development and testing
+- Fast iteration and deployment
 
 ⚠️ **Trade-offs:**
 
 - Requires app-specific passwords for Gmail/Outlook (extra user setup step)
 - IMAP/SMTP may be slower for very large mailboxes
 - Manual refresh required (no automatic push notifications)
+- User data limited to single browser (until cloud sync added later)
+- Serverless function cold starts (typically 1-2 seconds)
 
 ## Testing Strategy
 
@@ -690,8 +698,11 @@ Milestone 1 implements **direct IMAP/SMTP** connections with user credentials (a
 - ✅ Test with Outlook app passwords
 - ✅ Test with Yahoo app passwords
 - ✅ Test with custom IMAP/SMTP servers
-- ✅ Verify credential encryption
+- ✅ Verify credential encryption in localStorage
 - ✅ Test error handling flows
+- ✅ Deploy to Vercel and test production environment
+- ✅ Verify serverless function performance
+- ✅ Test across different browsers (Chrome, Firefox, Safari)
 
 ### Success Criteria
 
@@ -699,5 +710,7 @@ Milestone 1 implements **direct IMAP/SMTP** connections with user credentials (a
 - Users can view their inbox and read emails
 - Users can compose and send new emails
 - Users can reply to and forward emails
-- All credentials are encrypted at rest
+- All credentials are encrypted at rest in localStorage
 - All connections use TLS/SSL
+- Application successfully deploys to Vercel
+- No database or additional infrastructure required
