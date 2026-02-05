@@ -1,18 +1,19 @@
 import React from "react";
-import { Box, Container, Typography } from "@mui/material";
+import AppLayout from "../moles/AppLayout";
+import ThreadList from "../moles/ThreadList";
+import { useData } from "../../nonview/core/DataContext";
 
 function TrashPage() {
+  const { trashedThreads, loading } = useData();
+
   return (
-    <Container maxWidth="lg">
-      <Box sx={{ marginTop: 4 }}>
-        <Typography component="h1" variant="h4">
-          Trash
-        </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
-          Deleted emails view will be implemented here
-        </Typography>
-      </Box>
-    </Container>
+    <AppLayout title="Trash">
+      <ThreadList
+        threads={trashedThreads}
+        loading={loading}
+        emptyMessage="Trash is empty"
+      />
+    </AppLayout>
   );
 }
 
