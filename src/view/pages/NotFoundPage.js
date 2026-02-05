@@ -1,9 +1,9 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Box } from '@mui/material';
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
-import EmptyState from '../atoms/EmptyState';
-import Button from '../atoms/Button';
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import { Box } from "@mui/material";
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
+import EmptyState from "../atoms/EmptyState";
+import Button from "../atoms/Button";
 
 /**
  * NotFoundPage - 404 error page
@@ -14,17 +14,17 @@ function NotFoundPage() {
   const navigate = useNavigate();
 
   const handleBackToInbox = () => {
-    navigate('/inbox');
+    navigate("/inbox");
   };
 
   return (
     <Box
       sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        minHeight: '100vh',
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        minHeight: "100vh",
         px: 2,
       }}
     >
