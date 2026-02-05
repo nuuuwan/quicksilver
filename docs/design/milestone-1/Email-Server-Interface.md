@@ -43,6 +43,107 @@ Quicksilver's email server interface follows a modular architecture with three m
 
 The backend server acts as a mediator between the frontend and email providers, handling protocol-specific operations, OAuth flows, and data transformation.
 
+### What We Build
+
+**Quicksilver Frontend** (Custom Implementation)
+
+- React-based single-page application
+- UI components for email viewing, composition, and management
+- Authentication flows and account setup wizards
+- State management for emails, threads, and user settings
+- Real-time updates and notifications
+- Responsive design for desktop and mobile
+
+**Quicksilver Backend** (Custom Implementation)
+
+- Node.js/Express API server
+- OAuth 2.0 authentication handlers for each provider
+- Email synchronization engine
+- Protocol abstraction layer (unified interface for IMAP, SMTP, and REST APIs)
+- Database models for users, accounts, emails, and settings
+- Token management and refresh logic
+- Request routing and middleware
+- WebSocket server for real-time updates
+- Background workers for email fetching and sync
+
+**Database** (Custom Schema, Standard Technology)
+
+- MongoDB or PostgreSQL for storing user data, account credentials, and cached emails
+- We design the schema; we use standard database software
+
+### What We Use (Third-Party)
+
+**Email Providers** (External Services)
+
+- Gmail, Outlook, Hotmail, ProtonMail, etc.
+- We connect to these; we don't build or control them
+- Each provider has its own servers, APIs, and infrastructure
+
+**NPM Libraries** (Open Source Dependencies)
+
+- `imap`: IMAP protocol implementation (we configure and use it)
+- `nodemailer`: SMTP client for sending emails (we configure and use it)
+- `mailparser`: Email parsing utilities (we use its parsing logic)
+- `googleapis`: Google's official API client (we use their SDK)
+- `@microsoft/microsoft-graph-client`: Microsoft's official API client (we use their SDK)
+- `express`: Web framework (we build our API on top of it)
+- `mongoose` or `sequelize`: Database ORM (we use it for data modeling)
+- OAuth libraries for authentication flows
+
+**Infrastructure** (Deployment Environment)
+
+- Web server (e.g., AWS, Heroku, DigitalOcean) - we deploy to it
+- Database hosting - we choose and configure it
+- TLS/SSL certificates - we obtain and configure them
+
+### Interaction Flow
+
+```plaintext
+┌─────────────────────┐
+│                     │
+│  Quicksilver UI     │  ← We Build This
+│  (React Frontend)   │
+│                     │
+└──────────┬──────────┘
+           │
+           │ HTTPS/WebSocket
+           │
+┌──────────▼──────────┐
+│                     │
+│  Quicksilver API    │  ← We Build This
+│  (Node.js Backend)  │
+│                     │
+└──────────┬──────────┘
+           │
+           │ Uses NPM Libraries ← Third-Party Code
+           │ (imap, nodemailer, googleapis, etc.)
+           │
+           │ IMAP/SMTP/HTTPS
+           │
+┌──────────▼──────────┐
+│                     │
+│  Email Providers    │  ← Third-Party Services
+│  (Gmail, Outlook,   │     (We Don't Control)
+│   ProtonMail, etc.) │
+│                     │
+└─────────────────────┘
+```
+
+### Division of Responsibilities
+
+| Component | Who Builds/Maintains | Our Responsibility |
+|-----------|---------------------|-------------------|
+| Frontend UI | Quicksilver Team | Design, implement, and maintain all React components |
+| Backend API | Quicksilver Team | Implement all endpoints, business logic, and data models |
+| Database Schema | Quicksilver Team | Design and manage schema, migrations, and queries |
+| OAuth Implementation | Quicksilver Team | Implement OAuth flows using provider documentation |
+| IMAP/SMTP Connections | NPM Libraries + Our Config | Configure connections, handle errors, manage sessions |
+| Email Protocol | Standard (IETF) | Follow standards; use libraries for implementation |
+| Gmail/Outlook APIs | Google/Microsoft | Use their SDKs; implement error handling and retries |
+| Email Servers | Email Providers | They host and maintain; we just connect to them |
+| User Authentication | Quicksilver Team | Implement our own user auth (separate from email OAuth) |
+| Token Storage/Refresh | Quicksilver Team | Securely store and automatically refresh provider tokens |
+
 ## Standard Email Protocols
 
 ### IMAP (Internet Message Access Protocol)
