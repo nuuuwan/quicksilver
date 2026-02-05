@@ -1,7 +1,5 @@
 import React, { useState } from "react";
-import { Box } from "@mui/material";
-import Input from "../atoms/Input";
-import Button from "../atoms/Button";
+import { Box, TextField, Button, CircularProgress } from "@mui/material";
 import ErrorMessage from "../atoms/ErrorMessage";
 
 const PasswordResetForm = ({ onSubmit, loading = false }) => {
@@ -66,7 +64,7 @@ const PasswordResetForm = ({ onSubmit, loading = false }) => {
         </Box>
       )}
 
-      <Input
+      <TextField
         label="Email Address"
         type="email"
         value={email}
@@ -74,17 +72,22 @@ const PasswordResetForm = ({ onSubmit, loading = false }) => {
           setEmail(e.target.value);
           if (error) setError("");
         }}
-        error={error}
+        error={!!error}
+        helperText={error}
         autoComplete="email"
         required
+        fullWidth
+        variant="outlined"
         sx={{ mb: 2 }}
       />
 
       <Button
         type="submit"
         fullWidth
-        loading={loading}
-        variant="primary"
+        disabled={loading}
+        variant="contained"
+        color="primary"
+        startIcon={loading ? <CircularProgress size={20} /> : null}
         sx={{ mt: 3, mb: 2 }}
       >
         Send Reset Link

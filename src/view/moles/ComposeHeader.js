@@ -1,9 +1,7 @@
 import React from "react";
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, IconButton, Button } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { useNavigate } from "react-router-dom";
-import IconButton from "../atoms/IconButton";
-import Button from "../atoms/Button";
 
 const ComposeHeader = ({ onClose, onSend }) => {
   const navigate = useNavigate();
@@ -29,10 +27,12 @@ const ComposeHeader = ({ onClose, onSend }) => {
       }}
     >
       <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-        <IconButton icon={CloseIcon} ariaLabel="close" onClick={handleClose} />
+        <IconButton aria-label="close" onClick={handleClose}>
+          <CloseIcon />
+        </IconButton>
         <Typography variant="h6">New Message</Typography>
       </Box>
-      <Button variant="primary" onClick={onSend}>
+      <Button variant="contained" color="primary" onClick={onSend}>
         Send
       </Button>
     </Box>

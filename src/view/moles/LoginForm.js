@@ -1,8 +1,12 @@
 import React, { useState } from "react";
-import { Box } from "@mui/material";
-import Input from "../atoms/Input";
-import Button from "../atoms/Button";
-import Checkbox from "../atoms/Checkbox";
+import {
+  Box,
+  TextField,
+  FormControlLabel,
+  Checkbox,
+  Button,
+  CircularProgress,
+} from "@mui/material";
 import ErrorMessage from "../atoms/ErrorMessage";
 
 const LoginForm = ({ onSubmit, loading = false }) => {
@@ -57,39 +61,51 @@ const LoginForm = ({ onSubmit, loading = false }) => {
         </Box>
       )}
 
-      <Input
+      <TextField
         label="Email Address"
         type="email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        error={errors.email}
+        error={!!errors.email}
+        helperText={errors.email}
         autoComplete="email"
         required
+        fullWidth
+        variant="outlined"
         sx={{ mb: 2 }}
       />
 
-      <Input
+      <TextField
         label="Password"
         type="password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
-        error={errors.password}
+        error={!!errors.password}
+        helperText={errors.password}
         autoComplete="current-password"
         required
+        fullWidth
+        variant="outlined"
         sx={{ mb: 2 }}
       />
 
-      <Checkbox
-        checked={rememberMe}
-        onChange={(e) => setRememberMe(e.target.checked)}
+      <FormControlLabel
+        control={
+          <Checkbox
+            checked={rememberMe}
+            onChange={(e) => setRememberMe(e.target.checked)}
+          />
+        }
         label="Remember me"
       />
 
       <Button
         type="submit"
         fullWidth
-        loading={loading}
-        variant="primary"
+        variant="contained"
+        color="primary"
+        disabled={loading}
+        startIcon={loading ? <CircularProgress size={20} /> : null}
         sx={{ mt: 3, mb: 2 }}
       >
         Sign In

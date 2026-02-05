@@ -1,10 +1,8 @@
 import React, { useState } from "react";
-import { Box } from "@mui/material";
+import { Box, IconButton, TextField } from "@mui/material";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
 import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
 import SendIcon from "@mui/icons-material/Send";
-import IconButton from "../atoms/IconButton";
-import TextArea from "../atoms/TextArea";
 
 const MessageComposer = ({
   threadId,
@@ -33,17 +31,27 @@ const MessageComposer = ({
         gap: 1,
       }}
     >
-      <IconButton icon={AttachFileIcon} ariaLabel="attach" />
-      <IconButton icon={EmojiEmotionsIcon} ariaLabel="emoji" />
+      <IconButton aria-label="attach">
+        <AttachFileIcon />
+      </IconButton>
+      <IconButton aria-label="emoji">
+        <EmojiEmotionsIcon />
+      </IconButton>
       <Box sx={{ flex: 1 }}>
-        <TextArea
+        <TextField
           value={value}
           onChange={(e) => setValue(e.target.value)}
           placeholder={placeholder}
-          autoResize
+          fullWidth
+          variant="outlined"
+          multiline
+          minRows={1}
+          maxRows={6}
         />
       </Box>
-      <IconButton icon={SendIcon} ariaLabel="send" onClick={handleSend} />
+      <IconButton aria-label="send" onClick={handleSend}>
+        <SendIcon />
+      </IconButton>
     </Box>
   );
 };

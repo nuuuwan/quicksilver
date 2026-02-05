@@ -6,6 +6,8 @@ import {
   ListItemIcon,
   ListItemText,
   Typography,
+  Badge,
+  Button as MuiButton,
 } from "@mui/material";
 import { useNavigate, useLocation } from "react-router-dom";
 import InboxIcon from "@mui/icons-material/Inbox";
@@ -13,8 +15,6 @@ import SendIcon from "@mui/icons-material/Send";
 import DraftsIcon from "@mui/icons-material/Drafts";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import Badge from "../atoms/Badge";
-import Button from "../atoms/Button";
 import { useData } from "../../nonview/core/DataContext";
 
 const Sidebar = () => {
@@ -49,14 +49,15 @@ const Sidebar = () => {
 
       {/* Compose Button */}
       <Box sx={{ p: 2 }}>
-        <Button
-          variant="primary"
+        <MuiButton
+          variant="contained"
+          color="primary"
           fullWidth
           onClick={() => navigate("/compose")}
           startIcon={<EditIcon />}
         >
           Compose
-        </Button>
+        </MuiButton>
       </Box>
 
       {/* Navigation Items */}
@@ -85,7 +86,7 @@ const Sidebar = () => {
             >
               <ListItemIcon>
                 {badgeCount ? (
-                  <Badge count={badgeCount}>
+                  <Badge badgeContent={badgeCount} color="primary">
                     <Icon color={isActive ? "primary" : "action"} />
                   </Badge>
                 ) : (

@@ -1,8 +1,6 @@
 import React, { useRef } from "react";
-import { Box } from "@mui/material";
+import { Box, TextField } from "@mui/material";
 import RecipientInput from "./RecipientInput";
-import Input from "../atoms/Input";
-import TextArea from "../atoms/TextArea";
 import ComposeActions from "./ComposeActions";
 
 const ComposeForm = ({
@@ -42,20 +40,26 @@ const ComposeForm = ({
       />
 
       <Box sx={{ mt: 2 }}>
-        <Input
+        <TextField
           label="Subject"
           value={subject}
           onChange={(e) => onSubjectChange(e.target.value)}
           placeholder="Subject"
+          fullWidth
+          variant="outlined"
         />
       </Box>
 
       <Box sx={{ mt: 2 }}>
-        <TextArea
+        <TextField
           value={body}
           onChange={(e) => onBodyChange(e.target.value)}
           placeholder="Write your message..."
-          autoResize
+          fullWidth
+          variant="outlined"
+          multiline
+          minRows={10}
+          maxRows={20}
         />
       </Box>
 

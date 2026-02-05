@@ -1,7 +1,5 @@
 import React, { useState } from "react";
-import { Box, Stack } from "@mui/material";
-import Input from "../atoms/Input";
-import Button from "../atoms/Button";
+import { Box, Stack, TextField, Button, CircularProgress } from "@mui/material";
 import ErrorMessage from "../atoms/ErrorMessage";
 
 /**
@@ -116,26 +114,30 @@ function ProfileForm({ user, onSubmit }) {
           />
         )}
 
-        <Input
+        <TextField
           label="Name"
           type="text"
           name="name"
           value={formData.name}
           onChange={handleChange}
           disabled={loading}
+          fullWidth
+          variant="outlined"
         />
 
-        <Input
+        <TextField
           label="Email"
           type="email"
           name="email"
           value={formData.email}
           onChange={handleChange}
           disabled={loading}
+          fullWidth
+          variant="outlined"
         />
 
         <Box sx={{ pt: 2, borderTop: 1, borderColor: "divider" }}>
-          <Input
+          <TextField
             label="Current Password"
             type="password"
             name="currentPassword"
@@ -143,10 +145,12 @@ function ProfileForm({ user, onSubmit }) {
             onChange={handleChange}
             placeholder="Enter current password to change"
             disabled={loading}
+            fullWidth
+            variant="outlined"
           />
         </Box>
 
-        <Input
+        <TextField
           label="New Password"
           type="password"
           name="newPassword"
@@ -154,9 +158,11 @@ function ProfileForm({ user, onSubmit }) {
           onChange={handleChange}
           placeholder="Leave blank to keep current password"
           disabled={loading}
+          fullWidth
+          variant="outlined"
         />
 
-        <Input
+        <TextField
           label="Confirm New Password"
           type="password"
           name="confirmPassword"
@@ -164,9 +170,18 @@ function ProfileForm({ user, onSubmit }) {
           onChange={handleChange}
           placeholder="Confirm new password"
           disabled={loading}
+          fullWidth
+          variant="outlined"
         />
 
-        <Button type="submit" variant="primary" loading={loading} fullWidth>
+        <Button
+          type="submit"
+          variant="contained"
+          color="primary"
+          disabled={loading}
+          startIcon={loading ? <CircularProgress size={20} /> : null}
+          fullWidth
+        >
           Save Changes
         </Button>
       </Stack>

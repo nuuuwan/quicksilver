@@ -1,9 +1,8 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { Box } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import EmptyState from "../atoms/EmptyState";
-import Button from "../atoms/Button";
 
 /**
  * NotFoundPage - 404 error page
@@ -34,7 +33,7 @@ function NotFoundPage() {
         description="The page you're looking for doesn't exist or has been moved."
       />
       <Box sx={{ mt: 3 }}>
-        <Button variant="primary" onClick={handleBackToInbox}>
+        <Button variant="contained" color="primary" onClick={handleBackToInbox}>
           Back to Inbox
         </Button>
       </Box>

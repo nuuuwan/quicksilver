@@ -6,9 +6,9 @@ import {
   Box,
   useMediaQuery,
   useTheme,
+  IconButton,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import IconButton from "../atoms/IconButton";
 import SearchBar from "./SearchBar";
 
 const Header = ({
@@ -39,12 +39,9 @@ const Header = ({
       <Toolbar>
         {/* Mobile Menu Button */}
         {isMobile && (
-          <IconButton
-            icon={MenuIcon}
-            onClick={onMenuClick}
-            ariaLabel="menu"
-            sx={{ mr: 2 }}
-          />
+          <IconButton onClick={onMenuClick} aria-label="menu" sx={{ mr: 2 }}>
+            <MenuIcon />
+          </IconButton>
         )}
 
         {/* Title */}
@@ -69,14 +66,18 @@ const Header = ({
         )}
 
         {/* Action Buttons */}
-        {actions.map((action, index) => (
-          <IconButton
-            key={index}
-            icon={action.icon}
-            onClick={action.onClick}
-            ariaLabel={action.label}
-          />
-        ))}
+        {actions.map((action, index) => {
+          const ActionIcon = action.icon;
+          return (
+            <IconButton
+              key={index}
+              onClick={action.onClick}
+              aria-label={action.label}
+            >
+              <ActionIcon />
+            </IconButton>
+          );
+        })}
       </Toolbar>
     </AppBar>
   );

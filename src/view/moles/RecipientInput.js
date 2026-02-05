@@ -7,9 +7,9 @@ import {
   ListItemText,
   Typography,
   Chip,
+  TextField,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import Input from "../atoms/Input";
 
 const RecipientInput = ({ value = [], onChange, suggestions = [] }) => {
   const [inputValue, setInputValue] = useState("");
@@ -67,12 +67,14 @@ const RecipientInput = ({ value = [], onChange, suggestions = [] }) => {
             sx={{ mr: 0.5, mb: 0.5 }}
           />
         ))}
-        <Input
+        <TextField
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
           placeholder="Add recipient"
           onKeyDown={handleKeyDown}
+          variant="standard"
           sx={{ flex: 1, minWidth: 200 }}
+          InputProps={{ disableUnderline: true }}
         />
       </Paper>
 

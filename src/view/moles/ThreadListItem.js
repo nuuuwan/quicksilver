@@ -1,8 +1,7 @@
 import React from "react";
-import { Box, Typography } from "@mui/material";
-import Avatar from "../atoms/Avatar";
+import { Box, Typography, Avatar, Badge } from "@mui/material";
+import { getInitials } from "../_constants/avatarUtils";
 import Timestamp from "../atoms/Timestamp";
-import Badge from "../atoms/Badge";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
 
 const ThreadListItem = ({ thread, isSelected = false, onClick }) => {
@@ -37,7 +36,9 @@ const ThreadListItem = ({ thread, isSelected = false, onClick }) => {
       }}
     >
       {/* Avatar */}
-      <Avatar name={participantName} size="medium" />
+      <Avatar sx={{ width: 40, height: 40 }}>
+        {getInitials(participantName)}
+      </Avatar>
 
       {/* Thread Content */}
       <Box sx={{ flex: 1, minWidth: 0 }}>
@@ -97,7 +98,9 @@ const ThreadListItem = ({ thread, isSelected = false, onClick }) => {
             {hasAttachment && (
               <AttachFileIcon sx={{ fontSize: 16, color: "text.secondary" }} />
             )}
-            {unreadCount > 0 && <Badge count={unreadCount} variant="primary" />}
+            {unreadCount > 0 && (
+              <Badge badgeContent={unreadCount} color="primary" />
+            )}
           </Box>
         </Box>
       </Box>

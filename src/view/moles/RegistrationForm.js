@@ -1,7 +1,5 @@
 import React, { useState } from "react";
-import { Box } from "@mui/material";
-import Input from "../atoms/Input";
-import Button from "../atoms/Button";
+import { Box, TextField, Button, CircularProgress } from "@mui/material";
 import ErrorMessage from "../atoms/ErrorMessage";
 
 const RegistrationForm = ({ onSubmit, loading = false }) => {
@@ -81,55 +79,69 @@ const RegistrationForm = ({ onSubmit, loading = false }) => {
         </Box>
       )}
 
-      <Input
+      <TextField
         label="Full Name"
         type="text"
         value={formData.name}
         onChange={handleChange("name")}
-        error={errors.name}
+        error={!!errors.name}
+        helperText={errors.name}
         autoComplete="name"
         required
+        fullWidth
+        variant="outlined"
         sx={{ mb: 2 }}
       />
 
-      <Input
+      <TextField
         label="Email Address"
         type="email"
         value={formData.email}
         onChange={handleChange("email")}
-        error={errors.email}
+        error={!!errors.email}
+        helperText={errors.email}
         autoComplete="email"
         required
+        fullWidth
+        variant="outlined"
         sx={{ mb: 2 }}
       />
 
-      <Input
+      <TextField
         label="Password"
         type="password"
         value={formData.password}
         onChange={handleChange("password")}
-        error={errors.password}
+        error={!!errors.password}
+        helperText={errors.password}
         autoComplete="new-password"
         required
+        fullWidth
+        variant="outlined"
         sx={{ mb: 2 }}
       />
 
-      <Input
+      <TextField
         label="Confirm Password"
         type="password"
         value={formData.confirmPassword}
         onChange={handleChange("confirmPassword")}
-        error={errors.confirmPassword}
+        error={!!errors.confirmPassword}
+        helperText={errors.confirmPassword}
         autoComplete="new-password"
         required
+        fullWidth
+        variant="outlined"
         sx={{ mb: 2 }}
       />
 
       <Button
         type="submit"
         fullWidth
-        loading={loading}
-        variant="primary"
+        disabled={loading}
+        variant="contained"
+        color="primary"
+        startIcon={loading ? <CircularProgress size={20} /> : null}
         sx={{ mt: 3, mb: 2 }}
       >
         Register

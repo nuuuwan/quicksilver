@@ -1,11 +1,15 @@
 import React from "react";
-import { BottomNavigation, BottomNavigationAction, Paper } from "@mui/material";
+import {
+  BottomNavigation,
+  BottomNavigationAction,
+  Paper,
+  Badge,
+} from "@mui/material";
 import { useNavigate, useLocation } from "react-router-dom";
 import InboxIcon from "@mui/icons-material/Inbox";
 import SendIcon from "@mui/icons-material/Send";
 import DraftsIcon from "@mui/icons-material/Drafts";
 import DeleteIcon from "@mui/icons-material/Delete";
-import Badge from "../atoms/Badge";
 import { useData } from "../../nonview/core/DataContext";
 
 const MobileNavBar = () => {
@@ -43,7 +47,7 @@ const MobileNavBar = () => {
               value={item.path}
               icon={
                 badgeCount ? (
-                  <Badge count={badgeCount}>
+                  <Badge badgeContent={badgeCount} color="primary">
                     <Icon />
                   </Badge>
                 ) : (

@@ -1,8 +1,7 @@
 import React, { useState } from "react";
-import { InputBase, Paper } from "@mui/material";
+import { InputBase, Paper, IconButton } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import CloseIcon from "@mui/icons-material/Close";
-import IconButton from "../atoms/IconButton";
 
 const SearchBar = ({ onSearch, placeholder = "Search..." }) => {
   const [value, setValue] = useState("");
@@ -46,11 +45,12 @@ const SearchBar = ({ onSearch, placeholder = "Search..." }) => {
       />
       {value && (
         <IconButton
-          icon={CloseIcon}
           onClick={handleClear}
-          ariaLabel="clear search"
+          aria-label="clear search"
           size="small"
-        />
+        >
+          <CloseIcon />
+        </IconButton>
       )}
     </Paper>
   );

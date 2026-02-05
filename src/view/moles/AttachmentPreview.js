@@ -1,9 +1,8 @@
 import React from "react";
-import { Box } from "@mui/material";
+import { Box, IconButton } from "@mui/material";
 import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
 import DownloadIcon from "@mui/icons-material/Download";
 import CloseIcon from "@mui/icons-material/Close";
-import IconButton from "../atoms/IconButton";
 import AttachmentInfo from "../atoms/AttachmentInfo";
 
 const AttachmentPreview = ({ attachment, onRemove, onDownload }) => {
@@ -25,17 +24,16 @@ const AttachmentPreview = ({ attachment, onRemove, onDownload }) => {
       <Box sx={{ flex: 1 }} />
       {onDownload && (
         <IconButton
-          icon={DownloadIcon}
-          ariaLabel="download"
+          aria-label="download"
           onClick={() => onDownload(attachment)}
-        />
+        >
+          <DownloadIcon />
+        </IconButton>
       )}
       {onRemove && (
-        <IconButton
-          icon={CloseIcon}
-          ariaLabel="remove"
-          onClick={() => onRemove(attachment.id)}
-        />
+        <IconButton aria-label="remove" onClick={() => onRemove(attachment.id)}>
+          <CloseIcon />
+        </IconButton>
       )}
     </Box>
   );
