@@ -10,7 +10,6 @@ import InboxIcon from "@mui/icons-material/Inbox";
 import SendIcon from "@mui/icons-material/Send";
 import DraftsIcon from "@mui/icons-material/Drafts";
 import DeleteIcon from "@mui/icons-material/Delete";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { useData } from "../../nonview/core/DataContext";
 
 const MobileNavBar = () => {
@@ -23,7 +22,6 @@ const MobileNavBar = () => {
     { label: "Sent", path: "/sent", icon: SendIcon },
     { label: "Drafts", path: "/drafts", icon: DraftsIcon },
     { label: "Trash", path: "/trash", icon: DeleteIcon },
-    { label: "Profile", path: "/profile", icon: AccountCircleIcon },
   ];
 
   return (

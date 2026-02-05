@@ -7,8 +7,12 @@ import {
   useMediaQuery,
   useTheme,
   IconButton,
+  Avatar,
 } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 import MenuIcon from "@mui/icons-material/Menu";
+import { useAuth } from "../../nonview/core/AuthContext";
+import { getInitials } from "../_constants/avatarUtils";
 import SearchBar from "./SearchBar";
 
 const Header = ({
@@ -22,6 +26,8 @@ const Header = ({
 }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const navigate = useNavigate();
+  const { currentUser } = useAuth();
 
   const TitleIcon = titleIcon;
 
@@ -78,6 +84,26 @@ const Header = ({
             </IconButton>
           );
         })}
+
+        {/* Profile Avatar (Mobile Only) */}
+        {isMobile && (
+          <IconButton
+            onClick={() => navigate("/profile")}
+            aria-label="profile"
+            sx={{ ml: 1 }}
+          >
+            <Avatar
+              sx={{
+                width: 32,
+                height: 32,
+                fontSize: "0.875rem",
+                bgcolor: "primary.main",
+              }}
+            >
+              {getInitials(currentUser?.name || "User")}
+            </Avatar>
+          </IconButton>
+        )}
       </Toolbar>
     </AppBar>
   );
