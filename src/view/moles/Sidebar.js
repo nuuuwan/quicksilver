@@ -134,7 +134,10 @@ const Sidebar = () => {
                 width: 32,
                 height: 32,
                 fontSize: "0.875rem",
-                bgcolor: location.pathname === "/profile" ? "primary.main" : "action.active",
+                bgcolor:
+                  location.pathname === "/profile"
+                    ? "primary.main"
+                    : "action.active",
               }}
             >
               {getInitials(currentUser?.name || "User")}

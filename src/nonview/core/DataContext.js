@@ -68,6 +68,7 @@ export const DataProvider = ({ children }) => {
   const [drafts, setDrafts] = useState([]);
   const [trashedThreads, setTrashedThreads] = useState([]);
   const [contacts, setContacts] = useState([]);
+  const [messages, setMessages] = useState({});
   const [loading, setLoading] = useState(true);
 
   // Load mock data on mount
@@ -105,8 +106,13 @@ export const DataProvider = ({ children }) => {
   };
 
   const getMessages = (threadId) => {
+    // Return messages for this thread from state, or generate mock messages
+    if (messages[threadId]) {
+      return messages[threadId];
+    }
+
     // Mock messages for a thread
-    return [
+    const mockMessages = [
       {
         id: "msg-1",
         content: "Hi, this is the first message in the thread.",
@@ -123,6 +129,31 @@ export const DataProvider = ({ children }) => {
         isRead: true,
       },
     ];
+
+    // Store the mock messages
+    setMessages((prev) => ({ ...prev, [threadId]: mockMessages }));
+    return mockMessages;
+  };
+
+  const sendMessage = async (threadId, content) => {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const newMessage = {
+          id: `msg-${Date.now()}`,
+          content,
+          sender: { id: "current", name: "You", email: "you@example.com" },
+          timestamp: new Date().toISOString(),
+          isRead: true,
+        };
+
+        setMessages((prev) => ({
+          ...prev,
+          [threadId]: [...(prev[threadId] || []), newMessage],
+        }));
+
+        resolve(newMessage);
+      }, 200);
+    });
   };
 
   const sendEmail = async (emailData) => {
@@ -206,6 +237,7 @@ export const DataProvider = ({ children }) => {
     unreadCount,
     getThread,
     getMessages,
+    sendMessage,
     sendEmail,
     saveDraft,
     deleteThread,

@@ -10,10 +10,14 @@ import { useData } from "../../nonview/core/DataContext";
 
 function ThreadPage() {
   const { threadId } = useParams();
-  const { getThread, getMessages, loading } = useData();
+  const { getThread, getMessages, sendMessage, loading } = useData();
 
   const thread = getThread(threadId);
   const messages = getMessages(threadId);
+
+  const handleSendMessage = async (messageData) => {
+    await sendMessage(threadId, messageData.content);
+  };
 
   if (loading) {
     return (
@@ -64,7 +68,7 @@ function ThreadPage() {
             backgroundColor: "background.paper",
           }}
         >
-          <MessageComposer threadId={threadId} onSend={() => {}} />
+          <MessageComposer threadId={threadId} onSend={handleSendMessage} />
         </Box>
       </Box>
     </AppLayout>
