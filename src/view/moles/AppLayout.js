@@ -46,6 +46,7 @@ const AppLayout = ({
             flex: 1,
             overflow: "auto",
             backgroundColor: "background.default",
+            pb: isMobile ? "56px" : 0, // Bottom padding for mobile nav bar
           }}
         >
           {children}

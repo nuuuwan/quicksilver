@@ -10,7 +10,6 @@ import {
   Avatar,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import MenuIcon from "@mui/icons-material/Menu";
 import { useAuth } from "../../nonview/core/AuthContext";
 import { getInitials } from "../_constants/avatarUtils";
 import SearchBar from "./SearchBar";
