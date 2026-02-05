@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, InputBase, Paper } from "@mui/material";
+import { InputBase, Paper } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import CloseIcon from "@mui/icons-material/Close";
 import IconButton from "../atoms/IconButton";

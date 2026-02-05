@@ -7,6 +7,15 @@ const FloatingActionButton = ({
   ariaLabel,
   color = "primary",
 }) => {
+  const renderIcon = () => {
+    if (!Icon) return null;
+    if (React.isValidElement(Icon)) return Icon;
+    if (typeof Icon === "function" || typeof Icon === "object") {
+      return React.createElement(Icon);
+    }
+    return null;
+  };
+
   return (
     <Fab
       color={color}
@@ -19,7 +28,7 @@ const FloatingActionButton = ({
         display: { xs: "flex", md: "none" },
       }}
     >
-      {typeof Icon === "function" ? <Icon /> : Icon}
+      {renderIcon()}
     </Fab>
   );
 };

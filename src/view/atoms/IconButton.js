@@ -10,6 +10,15 @@ const IconButton = ({
   color = "default",
   ...props
 }) => {
+  const renderIcon = () => {
+    if (!Icon) return null;
+    if (React.isValidElement(Icon)) return Icon;
+    if (typeof Icon === "function" || typeof Icon === "object") {
+      return React.createElement(Icon);
+    }
+    return null;
+  };
+
   return (
     <MuiIconButton
       onClick={onClick}
@@ -19,7 +28,7 @@ const IconButton = ({
       color={color}
       {...props}
     >
-      {typeof Icon === "function" ? <Icon /> : Icon}
+      {renderIcon()}
     </MuiIconButton>
   );
 };

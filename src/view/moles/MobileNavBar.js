@@ -34,15 +34,20 @@ const MobileNavBar = () => {
       >
         {navItems.map((item) => {
           const Icon = item.icon;
+          const badgeCount = typeof item.badge === "number" ? item.badge : undefined;
           return (
             <BottomNavigationAction
               key={item.path}
               label={item.label}
               value={item.path}
               icon={
-                <Badge count={item.badge}>
+                badgeCount ? (
+                  <Badge count={badgeCount}>
+                    <Icon />
+                  </Badge>
+                ) : (
                   <Icon />
-                </Badge>
+                )
               }
             />
           );
