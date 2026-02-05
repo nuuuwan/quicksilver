@@ -45,9 +45,28 @@ function ThreadPage() {
 
   return (
     <AppLayout title={thread.subject || "Thread"}>
-      <ThreadHeader thread={thread} />
-      <ThreadView thread={thread} messages={messages} loading={loading} />
-      <MessageComposer threadId={threadId} onSend={() => {}} />
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          height: "100%",
+          overflow: "hidden",
+        }}
+      >
+        <ThreadHeader thread={thread} />
+        <Box sx={{ flex: 1, overflow: "auto" }}>
+          <ThreadView thread={thread} messages={messages} loading={loading} />
+        </Box>
+        <Box
+          sx={{
+            borderTop: 1,
+            borderColor: "divider",
+            backgroundColor: "background.paper",
+          }}
+        >
+          <MessageComposer threadId={threadId} onSend={() => {}} />
+        </Box>
+      </Box>
     </AppLayout>
   );
 }
