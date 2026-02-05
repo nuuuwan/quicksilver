@@ -1,8 +1,7 @@
 import React from "react";
-import { Box } from "@mui/material";
+import { Box, CircularProgress } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import ThreadListItem from "./ThreadListItem";
-import LoadingSpinner from "../atoms/LoadingSpinner";
 import EmptyState from "../atoms/EmptyState";
 
 const ThreadList = ({
