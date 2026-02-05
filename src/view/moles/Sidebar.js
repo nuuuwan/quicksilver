@@ -8,6 +8,7 @@ import {
   Typography,
   Badge,
   Button as MuiButton,
+  Avatar,
 } from "@mui/material";
 import { useNavigate, useLocation } from "react-router-dom";
 import InboxIcon from "@mui/icons-material/Inbox";
@@ -15,9 +16,9 @@ import SendIcon from "@mui/icons-material/Send";
 import DraftsIcon from "@mui/icons-material/Drafts";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { useData } from "../../nonview/core/DataContext";
 import { useAuth } from "../../nonview/core/AuthContext";
+import { getInitials } from "../_constants/avatarUtils";
 
 const Sidebar = () => {
   const navigate = useNavigate();
@@ -128,9 +129,16 @@ const Sidebar = () => {
           }}
         >
           <ListItemIcon>
-            <AccountCircleIcon
-              color={location.pathname === "/profile" ? "primary" : "action"}
-            />
+            <Avatar
+              sx={{
+                width: 32,
+                height: 32,
+                fontSize: "0.875rem",
+                bgcolor: location.pathname === "/profile" ? "primary.main" : "action.active",
+              }}
+            >
+              {getInitials(currentUser?.name || "User")}
+            </Avatar>
           </ListItemIcon>
           <ListItemText
             primary={currentUser?.name || "Profile"}
