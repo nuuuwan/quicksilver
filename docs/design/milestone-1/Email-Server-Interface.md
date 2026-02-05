@@ -1,37 +1,77 @@
-# Email Server Interface
+# Email Server Interface - Milestone 1
 
 ## Introduction
 
 Quicksilver is designed as a unified email client that provides a consistent, modern interface across multiple email providers. Rather than being tied to a single service, Quicksilver can connect to any email service, including Gmail, Outlook, Hotmail, ProtonMail, and many others.
 
-This design document outlines the technical architecture and implementation details for integrating with various email providers. The goal is to create a flexible, extensible system that abstracts away the complexities of different email protocols and provider-specific APIs, presenting a unified experience to the end user.
+**This document focuses on Milestone 1**, which establishes the foundational architecture for email provider integration. Milestone 1 prioritizes getting a working system with direct IMAP/SMTP connections, allowing users to connect their email accounts and view/send messages. Advanced features like OAuth 2.0, provider-specific APIs, and real-time synchronization are planned for future milestones.
 
-### Key Design Principles
+### Milestone 1 Goals
+
+1. **User Registration & Authentication**: Allow users to register and log in to Quicksilver
+2. **Email Service Configuration**: Collect email provider credentials during registration
+3. **IMAP/SMTP Support**: Enable direct connections using app-specific passwords
+4. **Basic Email Operations**: Read emails, send emails, basic folder management
+5. **Provider Auto-Configuration**: Pre-populate settings for Gmail, Outlook, Yahoo
+6. **Security Foundation**: Encrypt credentials at rest, use TLS for all connections
+
+### Milestone 1 Design Principles
+
+1. **Simplicity First**: Get a working system with standard protocols (IMAP/SMTP)
+2. **Provider Agnostic**: Support any email provider through standard protocols
+3. **Security by Default**: Encrypt credentials at rest and use TLS for all communications
+4. **User-Friendly Configuration**: Auto-populate settings for popular providers
+5. **Foundation for Growth**: Build an extensible architecture that supports future enhancements
+
+### Long-Term Design Principles (All Milestones)
 
 1. **Provider Agnostic**: Users should be able to use any email provider without changing their workflow
 2. **Standard Protocols First**: Leverage IMAP/SMTP where possible for maximum compatibility
-3. **Modern APIs When Available**: Use provider-specific APIs (Gmail API, Microsoft Graph) for enhanced features and performance
-4. **Security by Default**: Implement OAuth 2.0, encrypt credentials at rest, and use TLS for all communications
-5. **Progressive Enhancement**: Basic features work everywhere, advanced features leverage provider capabilities
+3. **Modern APIs When Available**: Use provider-specific APIs (Gmail API, Microsoft Graph) for enhanced features and performance (Milestone 2+)
+4. **Progressive Enhancement**: Basic features work everywhere, advanced features leverage provider capabilities (Milestone 2+)
 
-### Scope
+### Milestone 1 Scope
 
-This document covers:
+This document covers the foundational implementation:
 
-- Authentication mechanisms for different providers
-- Email protocol implementation (IMAP, SMTP, REST APIs)
-- Provider-specific integration requirements
-- Security and data protection strategies
-- Implementation roadmap
+- **In Scope for Milestone 1:**
+  - Direct IMAP/SMTP authentication with app-specific passwords
+  - User registration with email service configuration
+  - Database schema for user profiles and email settings
+  - Basic IMAP operations (list folders, fetch emails, mark read/unread)
+  - Basic SMTP operations (send email, reply, forward)
+  - Pre-configured settings for Gmail, Outlook, Yahoo
+  - Security foundations (credential encryption, TLS)
+
+- **Future Milestones:**
+  - OAuth 2.0 authentication flows (Milestone 2)
+  - Provider-specific REST APIs (Gmail API, Microsoft Graph) (Milestone 2)
+  - Real-time sync and push notifications (Milestone 3)
+  - ProtonMail Bridge integration (Milestone 3)
+  - Advanced search and filtering (Milestone 3)
+  - Multi-account support (Milestone 4)
+
+### Milestone Overview
+
+| Feature | M1 | M2 | M3 | M4 |
+|---------|----|----|----|----|
+| **Authentication** | App Passwords | + OAuth 2.0 | | |
+| **Email Protocols** | IMAP/SMTP | + REST APIs | | |
+| **Providers** | Gmail, Outlook, Yahoo, Custom | Same | + ProtonMail | |
+| **Email Operations** | View, Send, Reply, Forward | Same | + Search | |
+| **Sync** | Manual refresh | Same | + Real-time | |
+| **Accounts** | Single account | Same | Same | + Multi-account |
+| **Performance** | Basic | Optimized | + Background sync | + Caching |
+| **Status** | 🎯 CURRENT | 🚀 PLANNED | 🎨 PLANNED | 💎 PLANNED |
 
 ### Why Multiple Providers?
 
 Supporting multiple email providers allows Quicksilver to:
 
-- Give users freedom to choose their preferred email service based on privacy, features, or cost
-- Enable users to manage multiple email accounts from different providers in one interface
-- Ensure the application remains valuable even if a user switches providers
-- Take advantage of provider-specific features while maintaining a consistent user experience
+- **Milestone 1**: Give users freedom to use Gmail, Outlook, Yahoo, or any custom IMAP/SMTP provider
+- **Milestone 1**: Provide a unified interface regardless of email provider
+- **Future**: Enable users to manage multiple email accounts from different providers in one interface (Milestone 4)
+- **Future**: Take advantage of provider-specific features while maintaining a consistent user experience (Milestone 2+)
 
 ## Architecture Overview
 
@@ -56,15 +96,23 @@ The backend server acts as a mediator between the frontend and email providers, 
 
 **Quicksilver Backend** (Custom Implementation)
 
+**Milestone 1:**
+
 - Node.js/Express API server
-- OAuth 2.0 authentication handlers for each provider
-- Email synchronization engine
-- Protocol abstraction layer (unified interface for IMAP, SMTP, and REST APIs)
-- Database models for users, accounts, emails, and settings
-- Token management and refresh logic
-- Request routing and middleware
-- WebSocket server for real-time updates
-- Background workers for email fetching and sync
+- User authentication and session management
+- Database models for users and email configuration
+- IMAP/SMTP connection management
+- Basic request routing and middleware
+- Credential encryption utilities
+
+**Future Milestones:**
+
+- OAuth 2.0 authentication handlers (Milestone 2)
+- Protocol abstraction layer for REST APIs (Milestone 2)
+- Token management and refresh logic (Milestone 2)
+- WebSocket server for real-time updates (Milestone 3)
+- Background workers for email sync (Milestone 3)
+- Email caching and synchronization engine (Milestone 3)
 
 **Database** (Custom Schema, Standard Technology)
 
@@ -187,12 +235,17 @@ SMTP is used for sending emails.
 
 ## Authentication Architecture
 
-Quicksilver supports two authentication approaches for email services:
+### Milestone 1: Direct IMAP/SMTP Authentication
 
-### 1. App-Level OAuth 2.0 (Recommended for Gmail/Outlook)
+Milestone 1 implements direct IMAP/SMTP connections using user-provided credentials (app-specific passwords). This approach provides immediate functionality without requiring OAuth app registration.
+
+**Implementation Status**: ✅ Active in Milestone 1
+
+### Future: App-Level OAuth 2.0 (Milestone 2)
 
 **Purpose**: Allows Quicksilver to access user emails via modern OAuth 2.0 flow  
-**Requires**: Application-level credentials (Client ID/Secret) configured in environment variables
+**Requires**: Application-level credentials (Client ID/Secret) configured in environment variables  
+**Status**: 🔄 Planned for Milestone 2
 
 #### Environment Variables (App-Level)
 
@@ -221,10 +274,11 @@ OUTLOOK_REDIRECT_URI=https://yourdomain.com/auth/outlook/callback
 
 **Key Concept**: App credentials (environment variables) are shared across all users. User-specific tokens are stored per-user in their profile.
 
-### 2. Direct IMAP/SMTP with Credentials (For Yahoo/Custom/App Passwords)
+### Milestone 1 Implementation: Direct IMAP/SMTP with Credentials
 
 **Purpose**: Direct connection to email servers using username/password  
-**Requires**: User provides email address, password, and server settings during registration
+**Requires**: User provides email address, password, and server settings during registration  
+**Implementation Status**: ✅ Implemented in Milestone 1
 
 #### User-Level Configuration (Stored in Profile)
 
@@ -238,19 +292,31 @@ Collected during registration/profile setup:
 **Pre-configured Providers**: Gmail, Outlook, Yahoo (server settings auto-populated)  
 **Custom Provider**: User manually enters IMAP/SMTP server details
 
-#### When to Use Each Approach
+#### Milestone 1: Supported Authentication Methods
 
-| Provider | Recommended Auth | User Experience |
-|----------|-----------------|------------------|
-| Gmail | OAuth 2.0 (if app credentials configured) OR App Password + IMAP/SMTP | OAuth: Click "Allow" on Google page<br>App Password: Enter 16-char app password |
-| Outlook | OAuth 2.0 (if app credentials configured) OR App Password + IMAP/SMTP | OAuth: Click "Allow" on Microsoft page<br>App Password: Enter app-specific password |
-| Yahoo | IMAP/SMTP with App Password | User enters Yahoo app password |
-| Custom | IMAP/SMTP with credentials | User enters server details and password |
-| ProtonMail | ProtonMail Bridge (IMAP/SMTP) | User runs Bridge locally, enters Bridge password |
+| Provider | Milestone 1 Auth | User Experience | Future (Milestone 2+) |
+|----------|-----------------|-----------------|------------------------|
+| Gmail | App Password + IMAP/SMTP | Enter 16-char app password | OAuth 2.0 option |
+| Outlook | App Password + IMAP/SMTP | Enter app-specific password | OAuth 2.0 option |
+| Yahoo | IMAP/SMTP with App Password | Enter Yahoo app password | - |
+| Custom | IMAP/SMTP with credentials | Enter server details and password | - |
+| ProtonMail | Not supported in M1 | - | Bridge support (M3) |
 
 ## Gmail Integration
 
-### Prerequisites
+### Milestone 1: IMAP/SMTP Access
+
+**Implementation**: Direct IMAP/SMTP using app-specific passwords
+
+**User Setup Steps**:
+
+1. Enable 2-Factor Authentication on Gmail account
+2. Generate app-specific password at [myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords)
+3. Enter app password in Quicksilver registration form
+
+**No Cloud Console Project Required for Milestone 1**
+
+### Future (Milestone 2): OAuth 2.0 Integration
 
 1. **Google Cloud Console Project**
    - Create project at [console.cloud.google.com](https://console.cloud.google.com)
@@ -262,11 +328,13 @@ Collected during registration/profile setup:
    - Add authorized redirect URIs (e.g., `https://yourdomain.com/auth/gmail/callback`)
    - Obtain Client ID and Client Secret
 
-### OAuth 2.0 Scopes
+### OAuth 2.0 Scopes (Milestone 2)
 
-Required scopes for full functionality:
+**Note**: Not required for Milestone 1
 
-```
+Required scopes for full functionality when implementing OAuth 2.0:
+
+```text
 https://www.googleapis.com/auth/gmail.readonly        # Read emails
 https://www.googleapis.com/auth/gmail.send            # Send emails
 https://www.googleapis.com/auth/gmail.modify          # Modify labels, mark read/unread
@@ -289,33 +357,56 @@ https://www.googleapis.com/auth/gmail.compose         # Create drafts
 - Security: TLS/SSL
 - Authentication: OAuth 2.0 (XOAUTH2)
 
-### Additional Work Required
+### Milestone 1 Implementation Tasks
 
-1. **Gmail API Integration**
-   - Implement Gmail REST API as an alternative to IMAP/SMTP for better performance
-   - Use batch requests to reduce API calls
-   - Implement push notifications using Gmail Pub/Sub
-   - Handle Gmail-specific features (labels, categories, importance markers)
+1. **IMAP Connection** ✅
+   - Connect to `imap.gmail.com:993` with TLS
+   - Authenticate using app-specific password
+   - List folders/labels
+   - Fetch email messages
 
-2. **Rate Limiting**
-   - Implement exponential backoff for API rate limits
-   - Gmail API quota: 1 billion quota units per day
-   - Monitor quota usage and implement user-level throttling
+2. **SMTP Connection** ✅
+   - Connect to `smtp.gmail.com:587` with STARTTLS
+   - Authenticate using app-specific password
+   - Send emails with attachments
 
-3. **Error Handling**
-   - Handle Gmail-specific error codes (401, 403, 429, 500)
-   - Implement token refresh on 401 errors
-   - Graceful degradation for quota exceeded errors
-
-4. **Special Considerations**
-   - Handle Gmail's conversation threading model
+3. **Label Mapping** 🔄
    - Map Gmail labels to standard folders (INBOX, SENT, DRAFTS, TRASH)
-   - Support Gmail-specific search syntax
-   - Handle large attachment downloads (chunked transfer)
+   - Handle Gmail's "All Mail" folder
+
+4. **Error Handling** 🔄
+   - Handle authentication failures
+   - Detect invalid app passwords
+   - Display helpful error messages
+
+### Future Enhancements (Milestone 2+)
+
+1. **Gmail API Integration** (Milestone 2)
+   - Implement Gmail REST API for better performance
+   - Use batch requests to reduce API calls
+   - OAuth 2.0 authentication
+
+2. **Advanced Features** (Milestone 3)
+   - Push notifications using Gmail Pub/Sub
+   - Handle Gmail-specific features (categories, importance markers)
+   - Gmail-specific search syntax
+   - Conversation threading
 
 ## Outlook/Hotmail Integration
 
-### Prerequisites
+### Milestone 1: IMAP/SMTP Access
+
+**Implementation**: Direct IMAP/SMTP using app-specific passwords
+
+**User Setup Steps**:
+
+1. Enable 2-Factor Authentication on Microsoft account
+2. Generate app password in Microsoft account security settings
+3. Enter app password in Quicksilver registration form
+
+**No Azure Portal Registration Required for Milestone 1**
+
+### Future (Milestone 2): Microsoft Graph API Integration
 
 1. **Microsoft Azure Portal**
    - Register application at [portal.azure.com](https://portal.azure.com)
@@ -327,11 +418,13 @@ https://www.googleapis.com/auth/gmail.compose         # Create drafts
    - Configure redirect URIs
    - Obtain Application (client) ID and Client secret
 
-### OAuth 2.0 Scopes
+### OAuth 2.0 Scopes (Milestone 2)
 
-Required Microsoft Graph permissions:
+**Note**: Not required for Milestone 1
 
-```
+Required Microsoft Graph permissions when implementing OAuth 2.0:
+
+```text
 Mail.Read            # Read user's mail
 Mail.ReadWrite       # Read and write user's mail
 Mail.Send            # Send mail as user
@@ -363,34 +456,51 @@ offline_access       # Maintain access when user is offline
 - Security: STARTTLS
 - Authentication: OAuth 2.0 (XOAUTH2)
 
-### Additional Work Required
+### Milestone 1 Implementation Tasks
 
-1. **Microsoft Graph API Integration**
+1. **IMAP Connection** ✅
+   - Connect to `outlook.office365.com:993` with TLS
+   - Authenticate using app-specific password
+   - List folders
+   - Fetch email messages
+   - Support both personal and organizational accounts
+
+2. **SMTP Connection** ✅
+   - Connect to `smtp.office365.com:587` with STARTTLS
+   - Authenticate using app-specific password
+   - Send emails with attachments
+
+3. **Folder Management** 🔄
+   - Support Outlook folder hierarchy
+   - Map to standard folder names
+
+4. **Error Handling** 🔄
+   - Handle authentication failures
+   - Detect invalid app passwords
+   - Display helpful error messages
+
+### Future Enhancements (Milestone 2+)
+
+1. **Microsoft Graph API Integration** (Milestone 2)
    - Implement REST API calls for email operations
-   - Use `$select` and `$expand` query parameters to optimize data transfer
-   - Implement delta queries for efficient synchronization
+   - OAuth 2.0 authentication with MSAL
+   - Use `$select` and `$expand` query parameters
    - Handle pagination with `@odata.nextLink`
 
-2. **Authentication Flows**
-   - Implement Microsoft Identity Platform OAuth 2.0 flow
-   - Use MSAL (Microsoft Authentication Library) for token management
-   - Handle tenant-specific endpoints
-   - Support both personal (hotmail.com) and organizational (outlook.com) accounts
-
-3. **Special Features**
-   - Support Outlook-specific folder hierarchy
-   - Handle Focused Inbox vs Other categories
-   - Implement flag colors and importance levels
-   - Support @mentions and inline replies
-
-4. **Rate Limiting**
-   - Microsoft Graph throttling limits: 10,000 requests per 10 minutes per user
-   - Implement retry-after header handling
-   - Use batch requests to combine operations
+2. **Advanced Features** (Milestone 3)
+   - Delta queries for efficient synchronization
+   - Focused Inbox vs Other categories
+   - Flag colors and importance levels
+   - @mentions and inline replies
 
 ## ProtonMail Integration
 
-### Prerequisites
+**Status**: 🚫 Not supported in Milestone 1  
+**Planned**: Milestone 3
+
+### Future Implementation (Milestone 3)
+
+#### Prerequisites
 
 ProtonMail is unique as it provides end-to-end encryption, requiring special handling.
 
@@ -528,6 +638,8 @@ User profiles include authentication credentials and email service configuration
 
 ### API Endpoints
 
+#### Milestone 1 Implementation
+
 ```javascript
 // User Registration & Profile (includes email configuration)
 POST   /auth/register                // Register new user with email config
@@ -536,29 +648,34 @@ POST   /auth/logout                  // Logout from Quicksilver
 GET    /profile                      // Get user profile
 PUT    /profile                      // Update profile & email settings
 
-// OAuth Flow (for Gmail/Outlook if using OAuth)
-GET    /auth/:provider/initiate      // Start OAuth flow (redirects to provider)
-GET    /auth/:provider/callback      // OAuth callback (receives tokens)
-POST   /auth/:provider/disconnect    // Remove OAuth tokens
-
-// Email Service Testing
+// Email Service Testing (Milestone 1)
 POST   /emails/test-connection       // Test IMAP/SMTP connection
 GET    /emails/connection-status     // Check email service status
 
-// Email operations
+// Email operations (Milestone 1)
 GET    /emails/folders               // List folders
 GET    /emails/:folderId             // List emails in folder
 GET    /emails/:id                   // Get single email
 POST   /emails/send                  // Send email
 POST   /emails/:id/reply             // Reply to email
 POST   /emails/:id/forward           // Forward email
-PUT    /emails/:id/flag              // Update flags
+PUT    /emails/:id/flag              // Update flags (read/unread)
 DELETE /emails/:id                   // Delete email
-POST   /emails/search                // Search emails
+```
 
-// Sync operations
+#### Milestone 2+ Additions
+
+```javascript
+// OAuth Flow (Milestone 2)
+GET    /auth/:provider/initiate      // Start OAuth flow (redirects to provider)
+GET    /auth/:provider/callback      // OAuth callback (receives tokens)
+POST   /auth/:provider/disconnect    // Remove OAuth tokens
+
+// Advanced Operations (Milestone 3)
+POST   /emails/search                // Search emails
 POST   /sync/start                   // Start email synchronization
 GET    /sync/status                  // Get sync status
+GET    /sync/history                 // Get sync history
 ```
 
 ### Security Considerations
@@ -586,30 +703,28 @@ GET    /sync/status                  // Get sync status
 
 ## Configuration Management
 
-### Environment Variables (Application-Level)
+### Milestone 1: Environment Variables
 
-These are **application-level** settings that identify your Quicksilver instance. They are NOT user-specific.
+Milestone 1 requires minimal environment variables (no OAuth credentials needed):
 
 ```env
-# OAuth 2.0 App Credentials (Optional - only if using OAuth flow)
-# Gmail - Register at console.cloud.google.com
-GMAIL_CLIENT_ID=your_app_client_id           # Identifies YOUR app to Google
-GMAIL_CLIENT_SECRET=your_app_client_secret   # Secret for YOUR app
-GMAIL_REDIRECT_URI=https://yourdomain.com/auth/gmail/callback
-
-# Outlook - Register at portal.azure.com
-OUTLOOK_CLIENT_ID=your_app_client_id         # Identifies YOUR app to Microsoft
-OUTLOOK_CLIENT_SECRET=your_app_client_secret # Secret for YOUR app
-OUTLOOK_REDIRECT_URI=https://yourdomain.com/auth/outlook/callback
-
-# Application Security
-ENCRYPTION_KEY=your_32_byte_encryption_key   # For encrypting user credentials/tokens
+# Application Security (Required for Milestone 1)
+ENCRYPTION_KEY=your_32_byte_encryption_key   # For encrypting user credentials
 SESSION_SECRET=your_session_secret           # For session management
 DATABASE_URL=mongodb://localhost:27017/quicksilver
 
-# Server
+# Server Configuration (Required for Milestone 1)
 PORT=3001
-NODE_ENV=production
+NODE_ENV=development
+
+# Future: OAuth 2.0 App Credentials (Milestone 2)
+# Uncomment when implementing OAuth flows
+# GMAIL_CLIENT_ID=your_app_client_id
+# GMAIL_CLIENT_SECRET=your_app_client_secret
+# GMAIL_REDIRECT_URI=https://yourdomain.com/auth/gmail/callback
+# OUTLOOK_CLIENT_ID=your_app_client_id
+# OUTLOOK_CLIENT_SECRET=your_app_client_secret
+# OUTLOOK_REDIRECT_URI=https://yourdomain.com/auth/outlook/callback
 ```
 
 ### User-Level Configuration (Stored in Database)
@@ -641,21 +756,43 @@ These are **per-user** settings collected during registration or profile setup:
 
 ### Configuration Strategy Summary
 
+#### Milestone 1
+
+| Setting | Scope | Where Stored | Purpose |
+|---------|-------|--------------|----------|
+| `emailAddress` | User-level | User profile (database) | User's actual email address |
+| `emailPassword` | User-level | User profile (encrypted) | User's app password or credentials |
+| `imapConfig` | User-level | User profile | User's IMAP server settings |
+| `smtpConfig` | User-level | User profile | User's SMTP server settings |
+| `ENCRYPTION_KEY` | App-level | Environment variables | Encrypts user credentials |
+| `SESSION_SECRET` | App-level | Environment variables | Session management |
+| `DATABASE_URL` | App-level | Environment variables | Database connection |
+
+#### Milestone 2+ (OAuth)
+
 | Setting | Scope | Where Stored | Purpose |
 |---------|-------|--------------|----------|
 | `GMAIL_CLIENT_ID` | App-level | Environment variables | Identifies Quicksilver app to Google |
 | `GMAIL_CLIENT_SECRET` | App-level | Environment variables | Authenticates Quicksilver app to Google |
-| `emailAddress` | User-level | User profile (database) | User's actual email address |
-| `emailPassword` | User-level | User profile (encrypted) | User's app password or credentials |
 | `oauth.accessToken` | User-level | User profile (encrypted) | User's access token from OAuth flow |
-| `imapConfig` | User-level | User profile | User's IMAP server settings |
-| `ENCRYPTION_KEY` | App-level | Environment variables | Encrypts user credentials/tokens |
+| `oauth.refreshToken` | User-level | User profile (encrypted) | User's refresh token from OAuth flow |
 
-### Provider Registration URLs
+### Provider Setup Resources
 
-- **Gmail**: [https://console.cloud.google.com](https://console.cloud.google.com)
-- **Outlook**: [https://portal.azure.com](https://portal.azure.com)
-- **ProtonMail**: [https://protonmail.com/bridge](https://protonmail.com/bridge)
+#### Milestone 1 (App Passwords)
+
+- **Gmail App Passwords**: [myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords)
+- **Microsoft App Passwords**: Microsoft Account Security Settings
+- **Yahoo App Passwords**: Yahoo Account Security Settings
+
+#### Milestone 2+ (OAuth Registration)
+
+- **Gmail OAuth**: [console.cloud.google.com](https://console.cloud.google.com)
+- **Outlook OAuth**: [portal.azure.com](https://portal.azure.com)
+
+#### Milestone 3+ (Advanced)
+
+- **ProtonMail Bridge**: [protonmail.com/bridge](https://protonmail.com/bridge)
 
 ## User Registration & Profile Management
 
@@ -742,49 +879,92 @@ Users can update their email service configuration after registration via the Pr
 - Test connection before saving changes
 - Change Quicksilver account password
 
-### OAuth 2.0 vs Direct Credentials
+### Milestone 1: Direct Credentials Approach
 
-The current implementation supports **direct IMAP/SMTP** connections with user credentials (app passwords). This approach:
+Milestone 1 implements **direct IMAP/SMTP** connections with user credentials (app passwords).
 
-**Advantages:**
+**Why This Approach for Milestone 1:**
 
-- Simpler implementation - no OAuth flow needed
-- Works immediately without app registration
+✅ **Advantages:**
+
+- Simpler implementation - get working system faster
+- No OAuth app registration required with Google/Microsoft
+- Works immediately for development and testing
 - User has full control over credentials
-- Supports any IMAP/SMTP provider
+- Supports any IMAP/SMTP provider (maximum compatibility)
+- Easier debugging during development
 
-**Limitations:**
+⚠️ **Trade-offs:**
 
-- Requires app-specific passwords for Gmail/Outlook (less convenient)
+- Requires app-specific passwords for Gmail/Outlook (extra user setup step)
 - No access to provider-specific APIs (Gmail API, Graph API)
-- Cannot leverage advanced features (push notifications via Pub/Sub, delta queries)
+- Cannot leverage advanced features (push notifications, delta queries)
+- IMAP/SMTP may be slower than REST APIs for large mailboxes
 
-**Future Enhancement:** OAuth 2.0 flow can be added as an alternative authentication method:
+**Milestone 2 Enhancement: OAuth 2.0**
+
+OAuth 2.0 will be added as an alternative authentication method:
 
 - Users choose between "OAuth" or "App Password" during registration
 - OAuth: Redirect to provider, obtain tokens, store encrypted tokens in profile
-- App Password: Enter password directly (current implementation)
+- App Password: Enter password directly (Milestone 1 implementation remains available)
 
 ## Testing Strategy
 
+### Milestone 1 Testing
+
 1. **Unit Tests**
-   - Test OAuth flow handlers
-   - Test email parsing and formatting
-   - Test encryption/decryption utilities
+   - User registration validation
+   - Credential encryption/decryption
+   - Email address validation
+   - IMAP/SMTP configuration logic
+   - Database model validation
 
 2. **Integration Tests**
-   - Test IMAP/SMTP connections with test accounts
-   - Test API integrations with provider sandboxs
-   - Test token refresh mechanisms
+   - IMAP connections with Gmail/Outlook/Yahoo app passwords
+   - SMTP sending via Gmail/Outlook/Yahoo
+   - Custom IMAP/SMTP server connections
+   - Authentication flow (register/login/logout)
+   - Email operations (fetch, send, reply, forward)
 
 3. **End-to-End Tests**
-   - Test complete email send/receive flows
-   - Test multi-account management
-   - Test sync operations
+   - Complete registration flow with email configuration
+   - Login and view inbox
+   - Compose and send email
+   - Reply to and forward emails
+   - Move and delete emails
+   - Update profile and email settings
 
-## Implementation Phases
+4. **Security Tests**
+   - Verify credentials are encrypted at rest
+   - Verify TLS/SSL connections to email servers
+   - Verify session management
+   - Test input validation and sanitization
 
-### Phase 1: Core Infrastructure ✅ COMPLETED
+### Milestone 2+ Testing Additions
+
+1. **OAuth Flow Tests** (Milestone 2)
+   - OAuth authorization flow
+   - Token refresh mechanisms
+   - API integrations with provider sandboxes
+
+2. **Performance Tests** (Milestone 3)
+   - Background sync operations
+   - Real-time update delivery
+   - Large mailbox handling
+
+3. **Multi-Account Tests** (Milestone 4)
+   - Multiple accounts per user
+   - Account switching
+   - Unified inbox
+
+## Implementation Plan
+
+### Milestone 1: Foundation & Basic Email Access 🎯 CURRENT
+
+**Goal**: Get a working email client with IMAP/SMTP support
+
+#### M1.1: Frontend Foundation ✅ COMPLETED
 
 - ✅ Set up React frontend with Material-UI
 - ✅ Implement user registration with email service configuration
@@ -792,50 +972,169 @@ The current implementation supports **direct IMAP/SMTP** connections with user c
 - ✅ Implement basic authentication framework (AuthContext)
 - ✅ Auto-populate IMAP/SMTP settings for Gmail, Outlook, Yahoo
 - ✅ Support custom IMAP/SMTP configuration
-- 🔄 Set up backend server with Express (TODO)
-- 🔄 Implement database models (TODO)
-- 🔄 Implement credential encryption (TODO)
 
-### Phase 2: Direct IMAP/SMTP Integration
+#### M1.2: Backend Infrastructure 🔄 IN PROGRESS
 
-- Implement IMAP connection using user credentials
-- Implement SMTP sending using user credentials
-- Test with Gmail/Outlook app passwords
-- Test with Yahoo Mail
-- Test with custom IMAP/SMTP servers
-- Implement connection testing endpoint
-- Handle authentication errors gracefully
+- 🔄 Set up Node.js/Express backend server
+- 🔄 Implement database models (MongoDB/PostgreSQL)
+- 🔄 Create user authentication API endpoints
+- 🔄 Implement credential encryption (AES with ENCRYPTION_KEY)
+- 🔄 Set up session management
+- 🔄 Create basic API error handling
 
-### Phase 3: Email Operations
+#### M1.3: IMAP Integration 📋 TODO
 
-- List mailboxes/folders via IMAP
-- Fetch and display emails
-- Compose and send emails via SMTP
-- Implement reply and forward functionality
-- Mark emails as read/unread
-- Move emails between folders
-- Delete emails
+- 📋 Implement IMAP connection manager
+- 📋 Connect to Gmail/Outlook/Yahoo using app passwords
+- 📋 List folders/mailboxes
+- 📋 Fetch email messages and metadata
+- 📋 Mark emails as read/unread
+- 📋 Move emails between folders
+- 📋 Delete emails
+- 📋 Handle IMAP errors gracefully
 
-### Phase 4: Optional OAuth 2.0 Enhancement
+#### M1.4: SMTP Integration 📋 TODO
 
-- Implement Gmail OAuth flow (if app credentials configured)
-- Set up Gmail API integration
-- Implement Outlook OAuth flow (if app credentials configured)
-- Set up Microsoft Graph API integration
+- 📋 Implement SMTP connection manager
+- 📋 Send new emails
+- 📋 Reply to emails
+- 📋 Forward emails
+- 📋 Handle attachments
+- 📋 Handle SMTP errors gracefully
+
+#### M1.5: UI Email Operations 📋 TODO
+
+- 📋 Inbox view with email list
+- 📋 Email detail/reading view
+- 📋 Compose email interface
+- 📋 Reply/forward interface
+- 📋 Folder navigation
+- 📋 Basic error messages and loading states
+
+#### M1.6: Testing & Validation ✅ TODO
+
+- ✅ Test with Gmail app passwords
+- ✅ Test with Outlook app passwords
+- ✅ Test with Yahoo app passwords
+- ✅ Test with custom IMAP/SMTP servers
+- ✅ Verify credential encryption
+- ✅ Test error handling flows
+
+**Milestone 1 Success Criteria:**
+
+- Users can register and configure email accounts
+- Users can view their inbox and read emails
+- Users can compose and send new emails
+- Users can reply to and forward emails
+- All credentials are encrypted at rest
+- All connections use TLS/SSL
+
+---
+
+### Milestone 2: OAuth & Provider APIs 🚀 PLANNED
+
+**Goal**: Add OAuth 2.0 support and provider-specific APIs for better performance
+
+#### M2.1: OAuth 2.0 Framework
+
+- Implement OAuth 2.0 authorization flow
+- Create provider redirect handlers
+- Implement token storage and refresh logic
 - Add OAuth vs App Password selection in UI
-- Test email send/receive operations via APIs
 
-### Phase 5: ProtonMail Integration
+#### M2.2: Gmail API Integration
 
-- Implement ProtonMail Bridge detection and configuration
-- Test IMAP/SMTP via Bridge
-- Create user documentation for Bridge setup
+- Register OAuth app with Google Cloud Console
+- Implement Gmail REST API client
+- Use batch requests for efficiency
+- Implement token refresh
+- Migrate Gmail users to API (optional upgrade path)
 
-### Phase 6: Optimization & Polish
+#### M2.3: Microsoft Graph Integration
 
-- Implement caching strategies
-- Add background sync workers
-- Implement push notifications (for OAuth providers)
-- Performance optimization
-- Add multi-account support
-- Implement search functionality
+- Register OAuth app with Azure Portal
+- Implement Microsoft Graph API client
+- Use delta queries for synchronization
+- Implement token refresh
+- Support personal and organizational accounts
+
+**Milestone 2 Success Criteria:**
+
+- Users can choose OAuth or App Password authentication
+- Gmail users can authenticate via Google OAuth
+- Outlook users can authenticate via Microsoft OAuth
+- API-based access is faster than IMAP for large mailboxes
+
+---
+
+### Milestone 3: Real-Time Sync & Advanced Features 🎨 PLANNED
+
+**Goal**: Add real-time updates, background sync, and advanced features
+
+#### M3.1: Background Synchronization
+
+- Implement background workers for email fetching
+- Add email caching in database
+- Implement incremental sync
+- Add sync status indicators in UI
+
+#### M3.2: Real-Time Updates
+
+- Implement WebSocket server
+- Add Gmail Pub/Sub push notifications
+- Add Microsoft Graph webhooks
+- Real-time UI updates for new emails
+
+#### M3.3: ProtonMail Bridge Support
+
+- Implement ProtonMail Bridge detection
+- Configure local IMAP/SMTP for Bridge
+- Add ProtonMail-specific UI elements
+- Create Bridge setup documentation
+
+#### M3.4: Advanced Search
+
+- Implement server-side search
+- Add search UI components
+- Support provider-specific search syntax
+- Add search filters and date ranges
+
+**Milestone 3 Success Criteria:**
+
+- Emails sync automatically in background
+- New emails appear in real-time without refresh
+- ProtonMail users can connect via Bridge
+- Users can search across all emails
+
+---
+
+### Milestone 4: Polish & Scale 💎 PLANNED
+
+**Goal**: Production-ready features and optimizations
+
+#### M4.1: Multi-Account Support
+
+- Support multiple email accounts per user
+- Unified inbox view
+- Account switcher in UI
+
+#### M4.2: Performance Optimization
+
+- Implement aggressive caching
+- Optimize database queries
+- Add pagination for large mailboxes
+- Lazy loading for attachments
+
+#### M4.3: Production Deployment
+
+- Set up production environment
+- Implement monitoring and logging
+- Add rate limiting
+- Security audit and hardening
+
+**Milestone 4 Success Criteria:**
+
+- Users can manage multiple email accounts
+- Application handles large mailboxes (10,000+ emails)
+- Production deployment is stable and secure
+- System is ready for public beta
