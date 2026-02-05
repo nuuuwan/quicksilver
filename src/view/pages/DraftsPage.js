@@ -28,9 +28,7 @@ function DraftsPage() {
       <ThreadList
         threads={filteredThreads}
         loading={loading}
-        emptyMessage={
-          searchQuery ? "No drafts match your search" : "No drafts"
-        }
+        emptyMessage={searchQuery ? "No drafts match your search" : "No drafts"}
       />
     </AppLayout>
   );
