@@ -31,6 +31,17 @@ function LoginPage() {
           alignItems: "center",
         }}
       >
+        <Box
+          component="img"
+          src={`${process.env.PUBLIC_URL}/logo192.png`}
+          alt="Quicksilver Logo"
+          sx={{
+            width: 120,
+            height: 120,
+            mb: 2,
+            objectFit: "contain",
+          }}
+        />
         <Typography component="h1" variant="h3" sx={{ mb: 1, fontWeight: 600 }}>
           Quicksilver
         </Typography>
