@@ -38,13 +38,13 @@ const theme = createTheme({
   typography: {
     fontFamily: [
       '"Encode Sans"',
-      '-apple-system',
-      'BlinkMacSystemFont',
+      "-apple-system",
+      "BlinkMacSystemFont",
       '"Segoe UI"',
-      'Roboto',
+      "Roboto",
       '"Helvetica Neue"',
-      'Arial',
-      'sans-serif',
+      "Arial",
+      "sans-serif",
     ].join(","),
   },
   shape: {
