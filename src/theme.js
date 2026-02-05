@@ -41,6 +41,7 @@ const theme = createTheme({
   },
   typography: {
     fontFamily: [
+      '"Chocolate Classical Sans"',
       "-apple-system",
       "BlinkMacSystemFont",
       '"Segoe UI"',
