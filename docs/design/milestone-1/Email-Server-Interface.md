@@ -187,16 +187,66 @@ SMTP is used for sending emails.
 
 ## Authentication Architecture
 
-### OAuth 2.0 Flow
+Quicksilver supports two authentication approaches for email services:
 
-Most modern email providers require OAuth 2.0 for third-party applications. The flow works as follows:
+### 1. App-Level OAuth 2.0 (Recommended for Gmail/Outlook)
 
-1. **Authorization Request**: Redirect user to provider's authorization page
-2. **User Consent**: User grants permission to Quicksilver
-3. **Authorization Code**: Provider redirects back with authorization code
-4. **Token Exchange**: Server exchanges code for access and refresh tokens
-5. **Token Storage**: Securely store tokens in the database
-6. **Token Refresh**: Automatically refresh access tokens when they expire
+**Purpose**: Allows Quicksilver to access user emails via modern OAuth 2.0 flow  
+**Requires**: Application-level credentials (Client ID/Secret) configured in environment variables
+
+#### Environment Variables (App-Level)
+
+These identify **your Quicksilver application** to email providers:
+
+```env
+# Gmail - Register at console.cloud.google.com
+GMAIL_CLIENT_ID=your_app_client_id
+GMAIL_CLIENT_SECRET=your_app_client_secret
+GMAIL_REDIRECT_URI=https://yourdomain.com/auth/gmail/callback
+
+# Outlook - Register at portal.azure.com  
+OUTLOOK_CLIENT_ID=your_app_client_id
+OUTLOOK_CLIENT_SECRET=your_app_client_secret
+OUTLOOK_REDIRECT_URI=https://yourdomain.com/auth/outlook/callback
+```
+
+#### OAuth 2.0 Flow
+
+1. **Authorization Request**: User clicks "Connect Gmail" → redirects to Google with your app's Client ID
+2. **User Consent**: User grants permission to **Quicksilver app**
+3. **Authorization Code**: Google redirects back with authorization code
+4. **Token Exchange**: Server uses app credentials to exchange code for user-specific access/refresh tokens
+5. **Token Storage**: Store user's tokens (encrypted) in their profile
+6. **Token Refresh**: Automatically refresh access tokens when they expire using refresh token
+
+**Key Concept**: App credentials (environment variables) are shared across all users. User-specific tokens are stored per-user in their profile.
+
+### 2. Direct IMAP/SMTP with Credentials (For Yahoo/Custom/App Passwords)
+
+**Purpose**: Direct connection to email servers using username/password  
+**Requires**: User provides email address, password, and server settings during registration
+
+#### User-Level Configuration (Stored in Profile)
+
+Collected during registration/profile setup:
+
+- **Email Address**: <user@example.com>
+- **Email Password**: App-specific password or regular password
+- **IMAP Settings**: Host, port, security (auto-populated for Gmail/Outlook/Yahoo)
+- **SMTP Settings**: Host, port, security (auto-populated for Gmail/Outlook/Yahoo)
+
+**Pre-configured Providers**: Gmail, Outlook, Yahoo (server settings auto-populated)  
+**Custom Provider**: User manually enters IMAP/SMTP server details
+
+#### When to Use Each Approach
+
+| Provider | Recommended Auth | User Experience |
+|----------|-----------------|------------------|
+| Gmail | OAuth 2.0 (if app credentials configured) OR App Password + IMAP/SMTP | OAuth: Click "Allow" on Google page<br>App Password: Enter 16-char app password |
+| Outlook | OAuth 2.0 (if app credentials configured) OR App Password + IMAP/SMTP | OAuth: Click "Allow" on Microsoft page<br>App Password: Enter app-specific password |
+| Yahoo | IMAP/SMTP with App Password | User enters Yahoo app password |
+| Custom | IMAP/SMTP with credentials | User enters server details and password |
+| ProtonMail | ProtonMail Bridge (IMAP/SMTP) | User runs Bridge locally, enters Bridge password |
 
 ## Gmail Integration
 
@@ -415,43 +465,85 @@ ProtonMail is unique as it provides end-to-end encryption, requiring special han
 
 ### Database Schema
 
-Store email account configurations:
+#### User Profile Schema
+
+User profiles include authentication credentials and email service configuration collected during registration:
 
 ```javascript
 {
-  userId: ObjectId,
-  provider: String, // 'gmail', 'outlook', 'protonmail'
-  email: String,
-  authType: String, // 'oauth2', 'app_password', 'bridge'
-  credentials: {
-    accessToken: String,      // Encrypted
-    refreshToken: String,     // Encrypted
+  // User Authentication (for Quicksilver app)
+  id: String,
+  name: String,
+  email: String,              // Quicksilver account email
+  password: String,           // Encrypted - for Quicksilver login
+  
+  // Email Service Configuration (collected at registration)
+  emailServiceProvider: String, // 'gmail', 'outlook', 'yahoo', 'protonmail', 'custom'
+  emailAddress: String,         // Actual email address (e.g., user@gmail.com)
+  
+  // Authentication Type: OAuth2 vs Direct Credentials
+  authType: String,            // 'oauth2', 'app_password', 'imap_smtp'
+  
+  // For OAuth2 providers (Gmail, Outlook) - tokens obtained via app-level OAuth flow
+  oauth: {
+    accessToken: String,       // Encrypted - user's access token
+    refreshToken: String,      // Encrypted - user's refresh token
     tokenExpiry: Date,
-    clientId: String,
-    clientSecret: String      // Encrypted
+    scopes: [String]
   },
+  
+  // For Direct IMAP/SMTP (Yahoo, Custom, or app-password-based Gmail/Outlook)
+  credentials: {
+    emailPassword: String,     // Encrypted - app-specific or email password
+  },
+  
+  // IMAP Configuration (auto-populated for known providers, customizable for 'custom')
   imapConfig: {
-    host: String,
-    port: Number,
-    secure: Boolean
+    host: String,              // e.g., 'imap.gmail.com'
+    port: Number,              // e.g., 993
+    secure: Boolean            // true for SSL/TLS
   },
+  
+  // SMTP Configuration (auto-populated for known providers, customizable for 'custom')
   smtpConfig: {
-    host: String,
-    port: Number,
-    secure: Boolean
+    host: String,              // e.g., 'smtp.gmail.com'
+    port: Number,              // e.g., 587
+    secure: Boolean            // true for STARTTLS/SSL
   },
+  
+  // Sync and Status
   lastSync: Date,
-  status: String // 'active', 'token_expired', 'error'
+  status: String,              // 'active', 'token_expired', 'auth_error', 'disconnected'
+  createdAt: Date,
+  updatedAt: Date
 }
 ```
+
+**Pre-configured Provider Settings:**
+
+- **Gmail**: `imap.gmail.com:993`, `smtp.gmail.com:587`
+- **Outlook**: `outlook.office365.com:993`, `smtp.office365.com:587`
+- **Yahoo**: `imap.mail.yahoo.com:993`, `smtp.mail.yahoo.com:587`
+- **Custom**: User-defined IMAP/SMTP settings
 
 ### API Endpoints
 
 ```javascript
-// Authentication
-POST   /auth/:provider/initiate      // Start OAuth flow
-GET    /auth/:provider/callback      // OAuth callback
-POST   /auth/:provider/disconnect    // Disconnect account
+// User Registration & Profile (includes email configuration)
+POST   /auth/register                // Register new user with email config
+POST   /auth/login                   // Login to Quicksilver
+POST   /auth/logout                  // Logout from Quicksilver
+GET    /profile                      // Get user profile
+PUT    /profile                      // Update profile & email settings
+
+// OAuth Flow (for Gmail/Outlook if using OAuth)
+GET    /auth/:provider/initiate      // Start OAuth flow (redirects to provider)
+GET    /auth/:provider/callback      // OAuth callback (receives tokens)
+POST   /auth/:provider/disconnect    // Remove OAuth tokens
+
+// Email Service Testing
+POST   /emails/test-connection       // Test IMAP/SMTP connection
+GET    /emails/connection-status     // Check email service status
 
 // Email operations
 GET    /emails/folders               // List folders
@@ -494,22 +586,25 @@ GET    /sync/status                  // Get sync status
 
 ## Configuration Management
 
-### Environment Variables
+### Environment Variables (Application-Level)
+
+These are **application-level** settings that identify your Quicksilver instance. They are NOT user-specific.
 
 ```env
-# Gmail
-GMAIL_CLIENT_ID=your_client_id
-GMAIL_CLIENT_SECRET=your_client_secret
+# OAuth 2.0 App Credentials (Optional - only if using OAuth flow)
+# Gmail - Register at console.cloud.google.com
+GMAIL_CLIENT_ID=your_app_client_id           # Identifies YOUR app to Google
+GMAIL_CLIENT_SECRET=your_app_client_secret   # Secret for YOUR app
 GMAIL_REDIRECT_URI=https://yourdomain.com/auth/gmail/callback
 
-# Outlook
-OUTLOOK_CLIENT_ID=your_client_id
-OUTLOOK_CLIENT_SECRET=your_client_secret
+# Outlook - Register at portal.azure.com
+OUTLOOK_CLIENT_ID=your_app_client_id         # Identifies YOUR app to Microsoft
+OUTLOOK_CLIENT_SECRET=your_app_client_secret # Secret for YOUR app
 OUTLOOK_REDIRECT_URI=https://yourdomain.com/auth/outlook/callback
 
-# Application
-ENCRYPTION_KEY=your_32_byte_encryption_key
-SESSION_SECRET=your_session_secret
+# Application Security
+ENCRYPTION_KEY=your_32_byte_encryption_key   # For encrypting user credentials/tokens
+SESSION_SECRET=your_session_secret           # For session management
 DATABASE_URL=mongodb://localhost:27017/quicksilver
 
 # Server
@@ -517,11 +612,158 @@ PORT=3001
 NODE_ENV=production
 ```
 
+### User-Level Configuration (Stored in Database)
+
+These are **per-user** settings collected during registration or profile setup:
+
+```javascript
+// Collected in RegistrationForm/ProfileForm
+{
+  emailServiceProvider: "gmail" | "outlook" | "yahoo" | "custom",
+  emailAddress: "user@gmail.com",
+  
+  // For OAuth (if using Gmail/Outlook OAuth flow)
+  oauth: {
+    accessToken: "user_specific_encrypted_token",
+    refreshToken: "user_specific_encrypted_token"
+  },
+  
+  // For Direct IMAP/SMTP (or app passwords)
+  credentials: {
+    emailPassword: "user_encrypted_app_password"
+  },
+  
+  // Auto-populated based on provider, or user-entered for custom
+  imapConfig: { host: "imap.gmail.com", port: 993, secure: true },
+  smtpConfig: { host: "smtp.gmail.com", port: 587, secure: true }
+}
+```
+
+### Configuration Strategy Summary
+
+| Setting | Scope | Where Stored | Purpose |
+|---------|-------|--------------|----------|
+| `GMAIL_CLIENT_ID` | App-level | Environment variables | Identifies Quicksilver app to Google |
+| `GMAIL_CLIENT_SECRET` | App-level | Environment variables | Authenticates Quicksilver app to Google |
+| `emailAddress` | User-level | User profile (database) | User's actual email address |
+| `emailPassword` | User-level | User profile (encrypted) | User's app password or credentials |
+| `oauth.accessToken` | User-level | User profile (encrypted) | User's access token from OAuth flow |
+| `imapConfig` | User-level | User profile | User's IMAP server settings |
+| `ENCRYPTION_KEY` | App-level | Environment variables | Encrypts user credentials/tokens |
+
 ### Provider Registration URLs
 
 - **Gmail**: [https://console.cloud.google.com](https://console.cloud.google.com)
 - **Outlook**: [https://portal.azure.com](https://portal.azure.com)
 - **ProtonMail**: [https://protonmail.com/bridge](https://protonmail.com/bridge)
+
+## User Registration & Profile Management
+
+### Registration Flow
+
+When users register for Quicksilver, they provide both account credentials (for Quicksilver itself) and email service configuration (for connecting to their email provider).
+
+#### Registration Form Fields
+
+**Quicksilver Account Information:**
+
+- Full Name
+- Email Address (for Quicksilver account - can be different from email service)
+- Password (for Quicksilver login)
+- Confirm Password
+
+**Email Service Configuration:**
+
+- Email Service Provider (dropdown: Gmail, Outlook, Yahoo, Custom)
+- Email Address (actual email to connect to, e.g., <user@gmail.com>)
+- Email Password / App Password
+- IMAP/SMTP Settings (auto-populated for Gmail/Outlook/Yahoo, manual for Custom)
+
+#### Auto-Configuration by Provider
+
+When a user selects a known provider, IMAP/SMTP settings are automatically populated:
+
+**Gmail:**
+
+```
+IMAP: imap.gmail.com:993 (SSL)
+SMTP: smtp.gmail.com:587 (STARTTLS)
+```
+
+**Outlook:**
+
+```
+IMAP: outlook.office365.com:993 (SSL)
+SMTP: smtp.office365.com:587 (STARTTLS)
+```
+
+**Yahoo:**
+
+```
+IMAP: imap.mail.yahoo.com:993 (SSL)
+SMTP: smtp.mail.yahoo.com:587 (STARTTLS)
+```
+
+**Custom:**
+
+- User manually enters IMAP host, port, and security settings
+- User manually enters SMTP host, port, and security settings
+
+#### Validation
+
+Registration validates:
+
+- All required fields are filled
+- Email formats are valid
+- Password meets minimum length requirements (6+ characters)
+- Passwords match
+- Email service configuration is complete
+
+#### Backend Processing
+
+On registration submission:
+
+1. Validate all input data
+2. Encrypt sensitive data:
+   - User password (for Quicksilver login) - bcrypt/argon2
+   - Email password/app password - AES encryption with `ENCRYPTION_KEY`
+3. Store user profile in database with all configuration
+4. Optionally: Test IMAP/SMTP connection before completing registration
+5. Create user session
+6. Redirect to inbox
+
+### Profile Management
+
+Users can update their email service configuration after registration via the Profile page:
+
+- Change email service provider
+- Update email address and password
+- Modify IMAP/SMTP settings (for custom configurations)
+- Test connection before saving changes
+- Change Quicksilver account password
+
+### OAuth 2.0 vs Direct Credentials
+
+The current implementation supports **direct IMAP/SMTP** connections with user credentials (app passwords). This approach:
+
+**Advantages:**
+
+- Simpler implementation - no OAuth flow needed
+- Works immediately without app registration
+- User has full control over credentials
+- Supports any IMAP/SMTP provider
+
+**Limitations:**
+
+- Requires app-specific passwords for Gmail/Outlook (less convenient)
+- No access to provider-specific APIs (Gmail API, Graph API)
+- Cannot leverage advanced features (push notifications via Pub/Sub, delta queries)
+
+**Future Enhancement:** OAuth 2.0 flow can be added as an alternative authentication method:
+
+- Users choose between "OAuth" or "App Password" during registration
+- OAuth: Redirect to provider, obtain tokens, store encrypted tokens in profile
+- App Password: Enter password directly (current implementation)
 
 ## Testing Strategy
 
@@ -542,33 +784,58 @@ NODE_ENV=production
 
 ## Implementation Phases
 
-### Phase 1: Core Infrastructure
+### Phase 1: Core Infrastructure ✅ COMPLETED
 
-- Set up backend server with Express
-- Implement database models
-- Create basic authentication framework
+- ✅ Set up React frontend with Material-UI
+- ✅ Implement user registration with email service configuration
+- ✅ Create profile management forms
+- ✅ Implement basic authentication framework (AuthContext)
+- ✅ Auto-populate IMAP/SMTP settings for Gmail, Outlook, Yahoo
+- ✅ Support custom IMAP/SMTP configuration
+- 🔄 Set up backend server with Express (TODO)
+- 🔄 Implement database models (TODO)
+- 🔄 Implement credential encryption (TODO)
 
-### Phase 2: Gmail Integration
+### Phase 2: Direct IMAP/SMTP Integration
 
-- Implement Gmail OAuth flow
+- Implement IMAP connection using user credentials
+- Implement SMTP sending using user credentials
+- Test with Gmail/Outlook app passwords
+- Test with Yahoo Mail
+- Test with custom IMAP/SMTP servers
+- Implement connection testing endpoint
+- Handle authentication errors gracefully
+
+### Phase 3: Email Operations
+
+- List mailboxes/folders via IMAP
+- Fetch and display emails
+- Compose and send emails via SMTP
+- Implement reply and forward functionality
+- Mark emails as read/unread
+- Move emails between folders
+- Delete emails
+
+### Phase 4: Optional OAuth 2.0 Enhancement
+
+- Implement Gmail OAuth flow (if app credentials configured)
 - Set up Gmail API integration
-- Test email send/receive operations
+- Implement Outlook OAuth flow (if app credentials configured)
+- Set up Microsoft Graph API integration
+- Add OAuth vs App Password selection in UI
+- Test email send/receive operations via APIs
 
-### Phase 3: Outlook Integration
+### Phase 5: ProtonMail Integration
 
-- Implement Microsoft Graph authentication
-- Set up Graph API integration
-- Test with both personal and organizational accounts
-
-### Phase 4: ProtonMail Integration
-
-- Implement Bridge detection and configuration
+- Implement ProtonMail Bridge detection and configuration
 - Test IMAP/SMTP via Bridge
-- Create user documentation
+- Create user documentation for Bridge setup
 
-### Phase 5: Optimization & Polish
+### Phase 6: Optimization & Polish
 
 - Implement caching strategies
 - Add background sync workers
-- Implement push notifications
+- Implement push notifications (for OAuth providers)
 - Performance optimization
+- Add multi-account support
+- Implement search functionality
