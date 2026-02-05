@@ -1,18 +1,26 @@
 import React from "react";
 import { Navigate } from "react-router-dom";
-
-// This is a placeholder for authentication logic
-// In a real application, this would check actual auth state
-const useAuth = () => {
-  // TODO: Replace with actual authentication logic
-  // For now, return false to demonstrate the redirect
-  // You can set this to true for testing protected routes
-  const isAuthenticated = false;
-  return isAuthenticated;
-};
+import { useAuth } from "../../nonview/core/AuthContext";
+import { Box, CircularProgress } from "@mui/material";
 
 function ProtectedRoute({ children }) {
-  const isAuthenticated = useAuth();
+  const { isAuthenticated, loading } = useAuth();
+
+  if (loading) {
+    // Show loading spinner while checking authentication
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   if (!isAuthenticated) {
     // Redirect to login page if not authenticated
