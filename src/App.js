@@ -15,6 +15,7 @@ import TrashPage from "./view/pages/TrashPage";
 import ThreadPage from "./view/pages/ThreadPage";
 import ComposePage from "./view/pages/ComposePage";
 import ProfilePage from "./view/pages/ProfilePage";
+import NotFoundPage from "./view/pages/NotFoundPage";
 
 // Import ProtectedRoute component
 import ProtectedRoute from "./view/moles/ProtectedRoute";
@@ -96,6 +97,9 @@ function App() {
                 </ProtectedRoute>
               }
             />
+
+            {/* 404 Not Found - catch all */}
+            <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </DataProvider>
       </AuthProvider>
