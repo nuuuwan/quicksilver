@@ -64,7 +64,8 @@ const Sidebar = () => {
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = location.pathname === item.path;
-          const badgeCount = typeof item.badge === "number" ? item.badge : undefined;
+          const badgeCount =
+            typeof item.badge === "number" ? item.badge : undefined;
 
           return (
             <ListItem
@@ -74,7 +75,9 @@ const Sidebar = () => {
                 cursor: "pointer",
                 backgroundColor: isActive ? "action.selected" : "transparent",
                 "&:hover": {
-                  backgroundColor: isActive ? "action.selected" : "action.hover",
+                  backgroundColor: isActive
+                    ? "action.selected"
+                    : "action.hover",
                 },
                 borderLeft: isActive ? 3 : 0,
                 borderColor: "primary.main",
