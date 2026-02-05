@@ -6,12 +6,17 @@ const theme = createTheme({
   palette: {
     mode: "light",
     primary: {
-      main: "#EB7400", // Burgundy - main brand color
-      light: "#FFBE29",
-      dark: "#8D153A",
-      contrastText: "#ffffff",
+      main: "#8D153A", // Teal - main brand color for buttons
+      light: "#EB7400",
+      dark: "#00534E",
+      contrastText: "#FFFFFF",
     },
-
+    secondary: {
+      main: "#EB7400", // Orange - complementary color
+      light: "#FF9A3D",
+      dark: "#C55F00",
+      contrastText: "#FFFFFF",
+    },
     text: {
       primary: "#000000", // Pure black for maximum readability
       secondary: "#888888",
@@ -36,65 +41,6 @@ const theme = createTheme({
   shape: {
     borderRadius: 8, // Rounded corners for modern look
   },
-  components: {
-    MuiButton: {
-      styleOverrides: {
-        root: {
-          borderRadius: 8,
-          padding: "8px 16px",
-        },
-        contained: {
-          boxShadow: "none",
-          "&:hover": {
-            boxShadow: "none",
-          },
-        },
-      },
-    },
-    MuiCard: {
-      styleOverrides: {
-        root: {
-          borderRadius: 12,
-          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
-        },
-      },
-    },
-    MuiTextField: {
-      styleOverrides: {
-        root: {
-          "& .MuiOutlinedInput-root": {
-            borderRadius: 8,
-          },
-        },
-      },
-    },
-    MuiPaper: {
-      styleOverrides: {
-        root: {
-          borderRadius: 12,
-        },
-        elevation1: {
-          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
-        },
-      },
-    },
-    MuiChip: {
-      styleOverrides: {
-        root: {
-          borderRadius: 16,
-        },
-      },
-    },
-    MuiAvatar: {
-      styleOverrides: {
-        root: {
-          fontSize: "1rem",
-          fontWeight: 500,
-        },
-      },
-    },
-  },
-  spacing: 8, // 8px base spacing unit
 });
 
 export default theme;
