@@ -1,5 +1,13 @@
 import React, { useState } from "react";
-import { Box, TextField, Button, CircularProgress, MenuItem, Typography, Divider } from "@mui/material";
+import {
+  Box,
+  TextField,
+  Button,
+  CircularProgress,
+  MenuItem,
+  Typography,
+  Divider,
+} from "@mui/material";
 import ErrorMessage from "../atoms/ErrorMessage";
 
 // Email service provider configurations
@@ -262,7 +270,10 @@ const RegistrationForm = ({ onSubmit, loading = false }) => {
         value={formData.emailAddress}
         onChange={handleChange("emailAddress")}
         error={!!errors.emailAddress}
-        helperText={errors.emailAddress || "Your actual email address (e.g., yourname@gmail.com)"}
+        helperText={
+          errors.emailAddress ||
+          "Your actual email address (e.g., yourname@gmail.com)"
+        }
         required
         fullWidth
         variant="outlined"
@@ -275,7 +286,10 @@ const RegistrationForm = ({ onSubmit, loading = false }) => {
         value={formData.emailPassword}
         onChange={handleChange("emailPassword")}
         error={!!errors.emailPassword}
-        helperText={errors.emailPassword || "For Gmail/Outlook, use an app-specific password"}
+        helperText={
+          errors.emailPassword ||
+          "For Gmail/Outlook, use an app-specific password"
+        }
         required
         fullWidth
         variant="outlined"
