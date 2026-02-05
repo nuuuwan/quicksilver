@@ -43,13 +43,6 @@ const Header = ({
       }}
     >
       <Toolbar>
-        {/* Mobile Menu Button */}
-        {isMobile && (
-          <IconButton onClick={onMenuClick} aria-label="menu" sx={{ mr: 2 }}>
-            <MenuIcon />
-          </IconButton>
-        )}
-
         {/* Title */}
         <Box
           sx={{
