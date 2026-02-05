@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { Box, Stack } from '@mui/material';
-import Input from '../atoms/Input';
-import Button from '../atoms/Button';
-import ErrorMessage from '../atoms/ErrorMessage';
+import React, { useState } from "react";
+import { Box, Stack } from "@mui/material";
+import Input from "../atoms/Input";
+import Button from "../atoms/Button";
+import ErrorMessage from "../atoms/ErrorMessage";
 
 /**
  * ProfileForm - Form for editing user profile
@@ -11,58 +11,58 @@ import ErrorMessage from '../atoms/ErrorMessage';
  */
 function ProfileForm({ user, onSubmit }) {
   const [formData, setFormData] = useState({
-    name: user.name || '',
-    email: user.email || '',
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: '',
+    name: user.name || "",
+    email: user.email || "",
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
   });
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    setError('');
-    setSuccess('');
+    setError("");
+    setSuccess("");
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-    setSuccess('');
+    setError("");
+    setSuccess("");
 
     // Basic validation
     if (!formData.name.trim()) {
-      setError('Name is required');
+      setError("Name is required");
       return;
     }
 
     if (!formData.email.trim()) {
-      setError('Email is required');
+      setError("Email is required");
       return;
     }
 
     // Email format validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
-      setError('Please enter a valid email address');
+      setError("Please enter a valid email address");
       return;
     }
 
     // Password validation (if changing password)
     if (formData.newPassword || formData.confirmPassword) {
       if (!formData.currentPassword) {
-        setError('Current password is required to change password');
+        setError("Current password is required to change password");
         return;
       }
       if (formData.newPassword !== formData.confirmPassword) {
-        setError('New passwords do not match');
+        setError("New passwords do not match");
         return;
       }
       if (formData.newPassword.length < 6) {
-        setError('New password must be at least 6 characters');
+        setError("New password must be at least 6 characters");
         return;
       }
     }
@@ -82,27 +82,39 @@ function ProfileForm({ user, onSubmit }) {
       }
 
       await onSubmit(updateData);
-      setSuccess('Profile updated successfully');
-      
+      setSuccess("Profile updated successfully");
+
       // Clear password fields after successful update
       setFormData((prev) => ({
         ...prev,
-        currentPassword: '',
-        newPassword: '',
-        confirmPassword: '',
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: "",
       }));
     } catch (err) {
-      setError(err.message || 'Failed to update profile');
+      setError(err.message || "Failed to update profile");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <Box component="form" onSubmit={handleSubmit} sx={{ maxWidth: 500, mx: 'auto', px: 2 }}>
+    <Box
+      component="form"
+      onSubmit={handleSubmit}
+      sx={{ maxWidth: 500, mx: "auto", px: 2 }}
+    >
       <Stack spacing={3}>
-        {error && <ErrorMessage message={error} onDismiss={() => setError('')} />}
-        {success && <ErrorMessage message={success} variant="success" onDismiss={() => setSuccess('')} />}
+        {error && (
+          <ErrorMessage message={error} onDismiss={() => setError("")} />
+        )}
+        {success && (
+          <ErrorMessage
+            message={success}
+            variant="success"
+            onDismiss={() => setSuccess("")}
+          />
+        )}
 
         <Input
           label="Name"
@@ -122,7 +134,7 @@ function ProfileForm({ user, onSubmit }) {
           disabled={loading}
         />
 
-        <Box sx={{ pt: 2, borderTop: 1, borderColor: 'divider' }}>
+        <Box sx={{ pt: 2, borderTop: 1, borderColor: "divider" }}>
           <Input
             label="Current Password"
             type="password"
@@ -154,12 +166,7 @@ function ProfileForm({ user, onSubmit }) {
           disabled={loading}
         />
 
-        <Button 
-          type="submit" 
-          variant="primary" 
-          loading={loading}
-          fullWidth
-        >
+        <Button type="submit" variant="primary" loading={loading} fullWidth>
           Save Changes
         </Button>
       </Stack>

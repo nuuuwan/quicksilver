@@ -1,5 +1,5 @@
-import React from 'react';
-import { Typography } from '@mui/material';
+import React from "react";
+import { Typography } from "@mui/material";
 
 /**
  * Heading component for displaying text headings

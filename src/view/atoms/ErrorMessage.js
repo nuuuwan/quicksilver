@@ -6,7 +6,7 @@ const ErrorMessage = ({ message, onDismiss, severity = "error", variant }) => {
   if (!message) return null;
 
   // Support variant prop for backward compatibility
-  const alertSeverity = variant === 'success' ? 'success' : severity;
+  const alertSeverity = variant === "success" ? "success" : severity;
 
   return (
     <Alert
