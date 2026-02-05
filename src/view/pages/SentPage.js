@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import SendIcon from "@mui/icons-material/Send";
 import AppLayout from "../moles/AppLayout";
 import ThreadList from "../moles/ThreadList";
 import { useData } from "../../nonview/core/DataContext";
@@ -18,7 +19,12 @@ function SentPage() {
   });
 
   return (
-    <AppLayout title="Sent" showSearch onSearch={setSearchQuery}>
+    <AppLayout
+      title="Sent"
+      titleIcon={SendIcon}
+      showSearch
+      onSearch={setSearchQuery}
+    >
       <ThreadList
         threads={filteredThreads}
         loading={loading}

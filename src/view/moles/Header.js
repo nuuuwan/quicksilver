@@ -13,6 +13,7 @@ import SearchBar from "./SearchBar";
 
 const Header = ({
   title,
+  titleIcon,
   showBack = false,
   onMenuClick,
   actions = [],
@@ -21,6 +22,8 @@ const Header = ({
 }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+
+  const TitleIcon = titleIcon;
 
   return (
     <AppBar
@@ -45,13 +48,18 @@ const Header = ({
         )}
 
         {/* Title */}
-        <Typography
-          variant="h6"
-          component="h1"
-          sx={{ flexGrow: showSearch ? 0 : 1 }}
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            flexGrow: showSearch ? 0 : 1,
+          }}
         >
-          {title}
-        </Typography>
+          {TitleIcon && <TitleIcon sx={{ mr: 1, color: "text.secondary" }} />}
+          <Typography variant="h6" component="h1">
+            {title}
+          </Typography>
+        </Box>
 
         {/* Search Bar */}
         {showSearch && (

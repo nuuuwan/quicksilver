@@ -4,7 +4,13 @@ import Sidebar from "./Sidebar";
 import Header from "./Header";
 import MobileNavBar from "./MobileNavBar";
 
-const AppLayout = ({ children, title, showSearch = false, onSearch }) => {
+const AppLayout = ({
+  children,
+  title,
+  titleIcon,
+  showSearch = false,
+  onSearch,
+}) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -26,6 +32,7 @@ const AppLayout = ({ children, title, showSearch = false, onSearch }) => {
         {/* Mobile/Desktop Header */}
         <Header
           title={title}
+          titleIcon={titleIcon}
           showBack={false}
           onMenuClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           showSearch={showSearch}

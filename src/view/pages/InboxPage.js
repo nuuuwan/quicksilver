@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import EditIcon from "@mui/icons-material/Edit";
+import InboxIcon from "@mui/icons-material/Inbox";
 import AppLayout from "../moles/AppLayout";
 import ThreadList from "../moles/ThreadList";
 import FloatingActionButton from "../atoms/FloatingActionButton";
@@ -22,7 +23,12 @@ function InboxPage() {
   });
 
   return (
-    <AppLayout title="Inbox" showSearch onSearch={setSearchQuery}>
+    <AppLayout
+      title="Inbox"
+      titleIcon={InboxIcon}
+      showSearch
+      onSearch={setSearchQuery}
+    >
       <ThreadList
         threads={filteredThreads}
         loading={loading}
