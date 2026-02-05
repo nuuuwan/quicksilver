@@ -1,10 +1,10 @@
 import React from "react";
 import { useParams } from "react-router-dom";
+import { Box, CircularProgress } from "@mui/material";
 import AppLayout from "../moles/AppLayout";
 import ThreadHeader from "../moles/ThreadHeader";
 import ThreadView from "../moles/ThreadView";
 import MessageComposer from "../moles/MessageComposer";
-import LoadingSpinner from "../atoms/LoadingSpinner";
 import EmptyState from "../atoms/EmptyState";
 import { useData } from "../../nonview/core/DataContext";
 
@@ -18,7 +18,16 @@ function ThreadPage() {
   if (loading) {
     return (
       <AppLayout title="Thread">
-        <LoadingSpinner />
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            p: 3,
+          }}
+        >
+          <CircularProgress />
+        </Box>
       </AppLayout>
     );
   }

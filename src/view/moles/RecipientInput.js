@@ -6,9 +6,10 @@ import {
   ListItem,
   ListItemText,
   Typography,
+  Chip,
 } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 import Input from "../atoms/Input";
-import RecipientChip from "../atoms/RecipientChip";
 
 const RecipientInput = ({ value = [], onChange, suggestions = [] }) => {
   const [inputValue, setInputValue] = useState("");
@@ -53,11 +54,17 @@ const RecipientInput = ({ value = [], onChange, suggestions = [] }) => {
         sx={{ p: 1, display: "flex", flexWrap: "wrap", alignItems: "center" }}
       >
         {value.map((recipient) => (
-          <RecipientChip
+          <Chip
             key={recipient.email}
-            email={recipient.email}
-            name={recipient.name}
-            onRemove={() => handleRemove(recipient.email)}
+            label={
+              recipient.name
+                ? `${recipient.name} <${recipient.email}>`
+                : recipient.email
+            }
+            onDelete={() => handleRemove(recipient.email)}
+            deleteIcon={<CloseIcon />}
+            size="small"
+            sx={{ mr: 0.5, mb: 0.5 }}
           />
         ))}
         <Input

@@ -1,8 +1,6 @@
 import React from "react";
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import Avatar from "../atoms/Avatar";
-import Heading from "../atoms/Heading";
-import Text from "../atoms/Text";
 
 /**
  * ProfileHeader - Profile page header with avatar and user info
@@ -31,12 +29,12 @@ function ProfileHeader({ user }) {
         }}
       />
       <Box sx={{ textAlign: "center" }}>
-        <Heading level={4} sx={{ mb: 0.5 }}>
+        <Typography variant="h4" sx={{ mb: 0.5 }}>
           {user.name}
-        </Heading>
-        <Text variant="body" color="text.secondary">
+        </Typography>
+        <Typography variant="body1" color="text.secondary">
           {user.email}
-        </Text>
+        </Typography>
       </Box>
     </Box>
   );

@@ -14,7 +14,18 @@ const ThreadList = ({
   const navigate = useNavigate();
 
   if (loading) {
-    return <LoadingSpinner />;
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          p: 3,
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
   }
 
   if (!threads || threads.length === 0) {

@@ -1,6 +1,5 @@
 import React from "react";
-import { Box } from "@mui/material";
-import LoadingSpinner from "../atoms/LoadingSpinner";
+import { Box, CircularProgress } from "@mui/material";
 import MessageGroup from "./MessageGroup";
 
 const groupMessages = (messages = []) => {
@@ -22,7 +21,18 @@ const groupMessages = (messages = []) => {
 
 const ThreadView = ({ thread, messages = [], loading = false }) => {
   if (loading) {
-    return <LoadingSpinner />;
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          p: 3,
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
   }
 
   const groups = groupMessages(messages);
