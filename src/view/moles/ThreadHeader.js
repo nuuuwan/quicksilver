@@ -1,10 +1,5 @@
 import React from "react";
-import {
-  Box,
-  Typography,
-  IconButton as MuiIconButton,
-  Avatar,
-} from "@mui/material";
+import { Box, IconButton as MuiIconButton, Avatar } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useNavigate } from "react-router-dom";
 import { getInitials } from "../_constants/avatarUtils";
@@ -34,12 +29,7 @@ const ThreadHeader = ({ thread, onAction }) => {
         <Avatar sx={{ width: 40, height: 40 }}>
           {getInitials(participantName)}
         </Avatar>
-        <Box sx={{ minWidth: 0 }}>
-          <Typography variant="h6" noWrap>
-            {thread?.subject || "No subject"}
-          </Typography>
-          <ParticipantList participants={thread?.participants || []} />
-        </Box>
+        <ParticipantList participants={thread?.participants || []} />
       </Box>
       <ThreadActions threadId={thread?.id} onAction={onAction} />
     </Box>
