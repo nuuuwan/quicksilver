@@ -36,7 +36,16 @@ const theme = createTheme({
     divider: "#E0E0E0",
   },
   typography: {
-    fontFamily: ['"Chocolate Classical Sans"', "sans-serif"].join(","),
+    fontFamily: [
+      '"Encode Sans"',
+      '-apple-system',
+      'BlinkMacSystemFont',
+      '"Segoe UI"',
+      'Roboto',
+      '"Helvetica Neue"',
+      'Arial',
+      'sans-serif',
+    ].join(","),
   },
   shape: {
     borderRadius: 8, // Rounded corners for modern look
