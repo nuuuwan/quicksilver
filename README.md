@@ -2,6 +2,8 @@
 
 A modern React-based email client implementing the Email 2.0 vision.
 
+Prototype: <https://nuuuwan.github.io/quicksilver>
+
 ## The Vision: Email 2.0
 
 Email 2.0 reimagines email as something an order of magnitude more productive and user-friendly than current email systems. The vision integrates:
