@@ -67,17 +67,17 @@ The backend server acts as a mediator between the frontend and email providers, 
 
 **Quicksilver Backend** (Custom Implementation)
 
-- Node.js/Express API server
-- User authentication and session management
-- Database models for users and email configuration
+- Vercel Serverless Functions (API routes)
+- Stateless request handlers
 - IMAP/SMTP connection management
 - Request routing and middleware
-- Credential encryption utilities
+- No database required - fully stateless architecture
 
-**Database** (Custom Schema, Standard Technology)
+**Data Storage** (Frontend localStorage)
 
-- MongoDB or PostgreSQL for storing user data, account credentials, and cached emails
-- We design the schema; we use standard database software
+- User profiles stored in browser localStorage
+- Credentials encrypted client-side before storage
+- Each user's data isolated in their browser
 
 ### What We Use (Third-Party)
 
@@ -97,9 +97,9 @@ The backend server acts as a mediator between the frontend and email providers, 
 
 **Infrastructure** (Deployment Environment)
 
-- Web server (e.g., AWS, Heroku, DigitalOcean) - we deploy to it
-- Database hosting - we choose and configure it
-- TLS/SSL certificates - we obtain and configure them
+- Vercel platform for static hosting and serverless functions
+- Automatic HTTPS/TLS certificates
+- No separate database hosting required
 
 ### Interaction Flow
 
@@ -139,12 +139,12 @@ The backend server acts as a mediator between the frontend and email providers, 
 | Component | Who Builds/Maintains | Our Responsibility |
 |-----------|---------------------|-------------------|
 | Frontend UI | Quicksilver Team | Design, implement, and maintain all React components |
-| Backend API | Quicksilver Team | Implement all endpoints, business logic, and data models |
-| Database Schema | Quicksilver Team | Design and manage schema, migrations, and queries |
+| Backend API | Quicksilver Team | Implement serverless API routes and business logic |
+| Data Storage | Browser localStorage | Store user profiles in browser (no database) |
 | IMAP/SMTP Connections | NPM Libraries + Our Config | Configure connections, handle errors, manage sessions |
 | Email Protocol | Standard (IETF) | Follow standards; use libraries for implementation |
 | Email Servers | Email Providers | They host and maintain; we just connect to them |
-| User Authentication | Quicksilver Team | Implement our own user auth and session management |
+| User Authentication | Frontend (localStorage) | Manage user session in browser |
 
 ## Standard Email Protocols
 
@@ -319,7 +319,9 @@ Collected during registration/profile setup:
 
 ### Technology Stack
 
-**Backend Framework**: Node.js with Express
+**Frontend**: React deployed on Vercel
+
+**Backend**: Vercel Serverless Functions (Node.js)
 
 **Email Libraries**:
 
@@ -327,47 +329,53 @@ Collected during registration/profile setup:
 - `nodemailer`: For SMTP sending
 - `mailparser`: For parsing email content
 
-### Database Schema
+**Storage**: Browser localStorage (no database)
 
-User profiles include authentication credentials and email service configuration collected during registration:
+### Data Storage (localStorage)
+
+User profiles stored in browser `localStorage` - no database required:
 
 ```javascript
+// Stored in localStorage as JSON
 {
   // User Authentication (for Quicksilver app)
-  id: String,
+  id: String,                       // Generated UUID
   name: String,
-  email: String,              // Quicksilver account email
-  password: String,           // Encrypted - for Quicksilver login
+  email: String,                    // Quicksilver account email
   
   // Email Service Configuration (collected at registration)
-  emailServiceProvider: String, // 'gmail', 'outlook', 'yahoo', 'custom'
-  emailAddress: String,         // Actual email address (e.g., user@gmail.com)
+  emailServiceProvider: String,     // 'gmail', 'outlook', 'yahoo', 'custom'
+  emailAddress: String,             // Actual email address (e.g., user@gmail.com)
   
-  // Direct IMAP/SMTP Credentials
+  // Direct IMAP/SMTP Credentials (encrypted with Web Crypto API)
   credentials: {
-    emailPassword: String,     // Encrypted - app-specific or email password
+    emailPassword: String,          // Encrypted - app-specific or email password
   },
   
   // IMAP Configuration (auto-populated for known providers, customizable for 'custom')
   imapConfig: {
-    host: String,              // e.g., 'imap.gmail.com'
-    port: Number,              // e.g., 993
-    secure: Boolean            // true for SSL/TLS
+    host: String,                   // e.g., 'imap.gmail.com'
+    port: Number,                   // e.g., 993
+    secure: Boolean                 // true for SSL/TLS
   },
   
   // SMTP Configuration (auto-populated for known providers, customizable for 'custom')
   smtpConfig: {
-    host: String,              // e.g., 'smtp.gmail.com'
-    port: Number,              // e.g., 587
-    secure: Boolean            // true for STARTTLS/SSL
+    host: String,                   // e.g., 'smtp.gmail.com'
+    port: Number,                   // e.g., 587
+    secure: Boolean                 // true for STARTTLS/SSL
   },
   
   // Sync and Status
   lastSync: Date,
-  status: String,              // 'active', 'auth_error', 'disconnected'
+  status: String,                   // 'active', 'auth_error', 'disconnected'
   createdAt: Date,
   updatedAt: Date
 }
+
+// Storage operations
+localStorage.setItem('quicksilver_user', JSON.stringify(userProfile));
+const userProfile = JSON.parse(localStorage.getItem('quicksilver_user'));
 ```
 
 **Pre-configured Provider Settings:**
@@ -377,93 +385,90 @@ User profiles include authentication credentials and email service configuration
 - **Yahoo**: `imap.mail.yahoo.com:993`, `smtp.mail.yahoo.com:587`
 - **Custom**: User-defined IMAP/SMTP settings
 
-### API Endpoints
+### API Endpoints (Vercel Serverless Functions)
 
 ```javascript
-// User Registration & Profile (includes email configuration)
-POST   /auth/register                // Register new user with email config
-POST   /auth/login                   // Login to Quicksilver
-POST   /auth/logout                  // Logout from Quicksilver
-GET    /profile                      // Get user profile
-PUT    /profile                      // Update profile & email settings
+// All endpoints are stateless - user credentials passed with each request
 
 // Email Service Testing
-POST   /emails/test-connection       // Test IMAP/SMTP connection
-GET    /emails/connection-status     // Check email service status
+POST   /api/emails/test-connection     // Test IMAP/SMTP connection
+GET    /api/emails/connection-status   // Check email service status
 
-// Email operations
-GET    /emails/folders               // List folders
-GET    /emails/:folderId             // List emails in folder  
-GET    /emails/:id                   // Get single email
-POST   /emails/send                  // Send email
-POST   /emails/:id/reply             // Reply to email
-POST   /emails/:id/forward           // Forward email
-PUT    /emails/:id/flag              // Update flags (read/unread)
-DELETE /emails/:id                   // Delete email
+// Email operations (all require user config in request body/headers)
+GET    /api/emails/folders              // List folders
+GET    /api/emails/:folderId            // List emails in folder  
+GET    /api/emails/:id                  // Get single email
+POST   /api/emails/send                 // Send email
+POST   /api/emails/:id/reply            // Reply to email
+POST   /api/emails/:id/forward          // Forward email
+PUT    /api/emails/:id/flag             // Update flags (read/unread)
+DELETE /api/emails/:id                  // Delete email
 ```
 
-GET    /emails/connection-status     // Check email service status
+**Request Format:**
+Each API request includes user configuration (from localStorage):
 
-// Email operations
-GET    /emails/folders               // List folders
-GET    /emails/:folderId             // List emails in folder
-GET    /emails/:id                   // Get single email
-POST   /emails/send                  // Send email
-POST   /emails/:id/reply             // Reply to email
-POST   /emails/:id/forward           // Forward email
-PUT    /emails/:id/flag              // Update flags (read/unread)
-DELETE /emails/:id                   // Delete email
-
+```javascript
+// Example request to list emails
+POST /api/emails/folders
+Headers: Content-Type: application/json
+Body: {
+  emailAddress: "user@gmail.com",
+  credentials: { emailPassword: "encrypted_password" },
+  imapConfig: { host: "imap.gmail.com", port: 993, secure: true }
+}
 ```
 
 ### Security Considerations
 
 1. **Credential Storage**
-   - Encrypt user credentials at rest
-   - Use environment-specific encryption keys
-   - Store credentials in secure database (not localStorage)
+   - Encrypt user credentials using Web Crypto API before storing in localStorage
+   - Use user-specific encryption keys derived from a passphrase
+   - Credentials never stored in plain text
+   - localStorage is per-origin (isolated between users)
 
 2. **Data in Transit**
-   - Enforce HTTPS for all API communications
+   - Enforce HTTPS for all API communications (Vercel automatic)
    - Use TLS 1.2 or higher for email server connections
    - Validate SSL certificates
+   - Credentials encrypted even in API requests
 
-3. **Session Management**
-   - Implement session timeouts
-   - Use HTTP-only cookies for session tokens
+3. **Serverless Security**
+   - Each function invocation is isolated
+   - No shared state between requests
+   - Implement input validation on all endpoints
+   - Rate limiting via Vercel configuration
+
+4. **Browser Security**
+   - Use HttpOnly cookies for any session tokens
    - Implement CSRF protection
-
-4. **Rate Limiting**
-   - Implement per-user rate limiting
-   - Monitor and prevent abuse
-   - Implement request queuing for bulk operations
+   - Clear localStorage on logout
+   - Warn users to logout on shared computers
 
 ## Configuration Management
 
 ### Environment Variables
 
 ```env
-# Application Security
-ENCRYPTION_KEY=your_32_byte_encryption_key   # For encrypting user credentials
-SESSION_SECRET=your_session_secret            # For session management
-DATABASE_URL=mongodb://localhost:27017/quicksilver
+# Vercel Serverless Configuration
+# No database credentials needed - using localStorage
 
-# Server Configuration
+# Server Configuration (local development only)
 PORT=3001
 NODE_ENV=development
 ```
 
-### User-Level Configuration (Stored in Database)
+### User-Level Configuration (Stored in localStorage)
 
-These are **per-user** settings collected during registration or profile setup:
+These are **per-user** settings collected during registration or profile setup and stored in browser:
 
 ```javascript
-// Collected in RegistrationForm/ProfileForm
+// Collected in RegistrationForm/ProfileForm, stored in localStorage
 {
   emailServiceProvider: "gmail" | "outlook" | "yahoo" | "custom",
   emailAddress: "user@gmail.com",
   
-  // Direct IMAP/SMTP credentials
+  // Direct IMAP/SMTP credentials (encrypted with Web Crypto API)
   credentials: {
     emailPassword: "user_encrypted_app_password"
   },
@@ -478,13 +483,11 @@ These are **per-user** settings collected during registration or profile setup:
 
 | Setting | Scope | Where Stored | Purpose |
 |---------|-------|--------------|----------|
-| `emailAddress` | User-level | User profile (database) | User's actual email address |
-| `emailPassword` | User-level | User profile (encrypted) | User's app password or credentials |
-| `imapConfig` | User-level | User profile | User's IMAP server settings |
-| `smtpConfig` | User-level | User profile | User's SMTP server settings |
-| `ENCRYPTION_KEY` | App-level | Environment variables | Encrypts user credentials |
-| `SESSION_SECRET` | App-level | Environment variables | Session management |
-| `DATABASE_URL` | App-level | Environment variables | Database connection |
+| `emailAddress` | User-level | Browser localStorage | User's actual email address |
+| `emailPassword` | User-level | Browser localStorage (encrypted) | User's app password or credentials |
+| `imapConfig` | User-level | Browser localStorage | User's IMAP server settings |
+| `smtpConfig` | User-level | Browser localStorage | User's SMTP server settings |
+| User Profile | User-level | Browser localStorage | Complete user configuration |
 
 ### Provider Setup Resources
 
@@ -559,13 +562,13 @@ Registration validates:
 On registration submission:
 
 1. Validate all input data
-2. Encrypt sensitive data:
-   - User password (for Quicksilver login) - bcrypt/argon2
-   - Email password/app password - AES encryption with `ENCRYPTION_KEY`
-3. Store user profile in database with all configuration
-4. Optionally: Test IMAP/SMTP connection before completing registration
-5. Create user session
-6. Redirect to inbox
+2. Generate unique user ID (UUID)
+3. Encrypt sensitive data using Web Crypto API:
+   - Email password/app password encrypted client-side
+4. Store user profile in localStorage as JSON
+5. Optionally: Test IMAP/SMTP connection before completing registration
+6. Set authentication state in AuthContext
+7. Redirect to inbox
 
 ### Profile Management
 
@@ -604,17 +607,18 @@ Milestone 1 implements **direct IMAP/SMTP** connections with user credentials (a
 
 1. **Unit Tests**
    - User registration validation
-   - Credential encryption/decryption
+   - Credential encryption/decryption (Web Crypto API)
    - Email address validation
    - IMAP/SMTP configuration logic
-   - Database model validation
+   - localStorage operations
 
 2. **Integration Tests**
    - IMAP connections with Gmail/Outlook/Yahoo app passwords
    - SMTP sending via Gmail/Outlook/Yahoo
    - Custom IMAP/SMTP server connections
-   - Authentication flow (register/login/logout)
+   - Serverless API endpoints (local and deployed)
    - Email operations (fetch, send, reply, forward)
+   - localStorage persistence and retrieval
 
 3. **End-to-End Tests**
    - Complete registration flow with email configuration
@@ -625,10 +629,11 @@ Milestone 1 implements **direct IMAP/SMTP** connections with user credentials (a
    - Update profile and email settings
 
 4. **Security Tests**
-   - Verify credentials are encrypted at rest
+   - Verify credentials are encrypted in localStorage
    - Verify TLS/SSL connections to email servers
-   - Verify session management
    - Test input validation and sanitization
+   - Verify data isolation in browser storage
+   - Test logout clears sensitive data
 
 ## Implementation Plan
 
@@ -643,11 +648,11 @@ Milestone 1 implements **direct IMAP/SMTP** connections with user credentials (a
 
 ### Phase 2: Backend Infrastructure 🔄 IN PROGRESS
 
-- 🔄 Set up Node.js/Express backend server
-- 🔄 Implement database models (MongoDB/PostgreSQL)
-- 🔄 Create user authentication API endpoints
-- 🔄 Implement credential encryption (AES with ENCRYPTION_KEY)
-- 🔄 Set up session management
+- 🔄 Set up Vercel serverless functions (API routes)
+- 🔄 Implement stateless API endpoints
+- 🔄 Create IMAP/SMTP proxy functions
+- 🔄 Implement request validation
+- 🔄 Set up CORS and security headers
 - 🔄 Create basic API error handling
 
 ### Phase 3: IMAP Integration 📋 TODO
