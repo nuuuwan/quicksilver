@@ -1,18 +1,24 @@
 import React from "react";
-import { Box, Container, Typography } from "@mui/material";
+import { Box } from "@mui/material";
+import { useAuth } from "../../nonview/core/AuthContext";
+import AppLayout from "../moles/AppLayout";
+import ProfileHeader from "../moles/ProfileHeader";
+import ProfileForm from "../moles/ProfileForm";
 
 function ProfilePage() {
+  const { currentUser, updateProfile } = useAuth();
+
+  const handleUpdateProfile = async (updateData) => {
+    await updateProfile(updateData);
+  };
+
   return (
-    <Container maxWidth="md">
-      <Box sx={{ marginTop: 4 }}>
-        <Typography component="h1" variant="h4">
-          Profile
-        </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
-          User profile and settings will be implemented here
-        </Typography>
+    <AppLayout>
+      <Box sx={{ pb: 4 }}>
+        <ProfileHeader user={currentUser} />
+        <ProfileForm user={currentUser} onSubmit={handleUpdateProfile} />
       </Box>
-    </Container>
+    </AppLayout>
   );
 }
 
