@@ -15,12 +15,15 @@ import SendIcon from "@mui/icons-material/Send";
 import DraftsIcon from "@mui/icons-material/Drafts";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { useData } from "../../nonview/core/DataContext";
+import { useAuth } from "../../nonview/core/AuthContext";
 
 const Sidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { unreadCount } = useData();
+  const { currentUser } = useAuth();
 
   const navItems = [
     { label: "Inbox", path: "/inbox", icon: InboxIcon, badge: unreadCount },
@@ -104,6 +107,44 @@ const Sidebar = () => {
           );
         })}
       </List>
+
+      {/* Profile Section */}
+      <Box sx={{ borderTop: 1, borderColor: "divider", p: 2 }}>
+        <ListItem
+          onClick={() => navigate("/profile")}
+          sx={{
+            cursor: "pointer",
+            borderRadius: 1,
+            backgroundColor:
+              location.pathname === "/profile"
+                ? "action.selected"
+                : "transparent",
+            "&:hover": {
+              backgroundColor:
+                location.pathname === "/profile"
+                  ? "action.selected"
+                  : "action.hover",
+            },
+          }}
+        >
+          <ListItemIcon>
+            <AccountCircleIcon
+              color={location.pathname === "/profile" ? "primary" : "action"}
+            />
+          </ListItemIcon>
+          <ListItemText
+            primary={currentUser?.name || "Profile"}
+            secondary="Settings"
+            primaryTypographyProps={{
+              fontWeight: location.pathname === "/profile" ? 600 : 400,
+              noWrap: true,
+            }}
+            secondaryTypographyProps={{
+              variant: "caption",
+            }}
+          />
+        </ListItem>
+      </Box>
     </Box>
   );
 };
